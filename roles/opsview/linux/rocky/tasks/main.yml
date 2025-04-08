@@ -50,25 +50,23 @@
       opsview ALL=NOPASSWD:/opt/opsview/agent/plugins/check_csf
     create: yes
 
-- name: Add 'exadmn' user to 'opsview' group
+- name: Copy the 'NRPE' configuration file
   become: true
   become_user: root
-  user:
-    name: exadmn
-    groups: opsview
-    append: yes
-
-- name: Copy the 'NRPE' configuration file
   template:
     src: files/opsview/nrpe.cfg.j2
     dest: /opt/opsview/agent/etc/nrpe.cfg
 
 - name: Copy the 'check_bandwidth_quota' file
+  become: true
+  become_user: root
   template:
     src: files/opsview/check_bandwidth_quota.sh.j2
     dest: /opt/opsview/agent/plugins/check_bandwidth_quota.sh
 
 - name: Copy the 'check_csf' file
+  become: true
+  become_user: root
   copy:
     src: files/opsview/check_csf
     dest: /opt/opsview/agent/plugins
@@ -76,6 +74,8 @@
     mode: "0750"
 
 - name: Copy the 'check_eximmailqueue' file
+  become: true
+  become_user: root
   copy:
     src: files/opsview/check_eximmailqueue
     dest: /opt/opsview/agent/plugins
