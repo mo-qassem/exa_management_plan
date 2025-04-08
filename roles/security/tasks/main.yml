@@ -1,10 +1,14 @@
 ---
-- name: Gather RPM facts
-  package_facts:
+- name: Check if cPanel service is active
+  systemd:
+    name: cpanel.service
+    state: started
+  register: cpanel_status
+  ignore_errors: true
 
-- name: Check if cPanel is installed
+- name: Set fact if cPanel service is running
   set_fact:
-    cpanel_installed: "{{ ansible_facts.packages['cpanel'] is defined }}"
+    cpanel_installed: "{{ cpanel_status.state == 'started' }}"
 
 - name: Print the result
   debug:
