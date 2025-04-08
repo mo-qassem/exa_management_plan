@@ -1,4 +1,5 @@
-- name: Install Opsview Agent
+---
+- name: install Opsview Agent
   hosts: all
   become: true
   remote_user: exadmn
