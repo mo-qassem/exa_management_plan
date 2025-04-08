@@ -50,3 +50,9 @@
       - htop
     state: present
   when: linux_distribution == 'ubuntu'
+
+- name: Ensure the 'Vnstat' service is started
+  service:
+    name: vnstat
+    state: started
+    enabled: yes
