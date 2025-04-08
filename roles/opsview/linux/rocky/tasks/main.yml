@@ -83,7 +83,9 @@
     mode: "0750"
 
 - name: Start 'Opsview' Agent
-  systemd:
+  become: true
+  become_user: root
+  service:
     name: opsview-agent
     state: started
     enabled: yes
