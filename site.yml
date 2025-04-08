@@ -11,6 +11,10 @@
       set_fact:
         linux_distribution: "{{ ansible_facts['distribution'] | lower }}"
   roles:
-    - common
     - user_setup
-    - opsview
+    - role: common
+      become: true
+      remote_user: exadmn
+    - role: opsview
+      become: true
+      become_user: exadmn
