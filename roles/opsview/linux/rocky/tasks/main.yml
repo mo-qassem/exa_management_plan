@@ -18,7 +18,15 @@
     dest: /tmp/opsview-agent-rhel.rpm
   when: not file_exist.stat.exists
 
-- name: Install 'Opsview' RPM package
-  command: rpm -i /tmp/opsview-agent-rhel.rpm
+- name: Gather RPM facts
+  rpm_facts:
+
+- name: Check if opsview-agent is installed
+  set_fact:
+    opsview_installed: "{{ ansible_facts.packages['opsview-agent'] is defined }}"
+
+- name: Install 'Opsview' RPM package if not installed
+  command: sudo rpm -i /tmp/opsview-agent-rhel.rpm
   args:
     creates: /opt/opsview/agent
+  when: not opsview_installed
