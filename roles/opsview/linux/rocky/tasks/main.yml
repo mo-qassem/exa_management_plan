@@ -51,6 +51,7 @@
     create: yes
 
 - name: Add 'exadmn' user to 'opsview' group
+  become: true
   user:
     name: exadmn
     groups: opsview
