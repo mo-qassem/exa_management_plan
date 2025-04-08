@@ -1,4 +1,4 @@
 ---
 - name: Include Opsview Role Based on Linux Distro
   include_role:
-    name: "linux/{{ ansible_facts['distribution'] | lower }}"
+    name: "opsview/linux/{{ linux_distribution }}"
