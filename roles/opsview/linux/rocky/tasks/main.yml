@@ -17,3 +17,8 @@
     url: https://box119.exaservers.com/exa_ansible/opsview-agent-rhel.rpm
     dest: /tmp/opsview-agent-rhel.rpm
   when: not file_exist.stat.exists
+
+- name: Install 'Opsview' RPM package
+  command: rpm -i /tmp/opsview-agent-rhel.rpm
+  args:
+    creates: /opt/opsview/agent
