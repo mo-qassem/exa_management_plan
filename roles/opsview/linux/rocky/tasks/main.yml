@@ -19,7 +19,7 @@
   when: not file_exist.stat.exists
 
 - name: Gather RPM facts
-  rpm_facts:
+  package_facts:
 
 - name: Check if opsview-agent is installed
   set_fact:
