@@ -52,6 +52,7 @@
 
 - name: Add 'exadmn' user to 'opsview' group
   become: true
+  become_user: root
   user:
     name: exadmn
     groups: opsview
