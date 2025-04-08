@@ -1,8 +1,4 @@
 ---
-- name: Identify Linux distribution
-  set_fact:
-    linux_distribution: "{{ ansible_facts['distribution'] | lower }}"
-
 - name: Create 'exadmn' User
   user:
     name: exadmn

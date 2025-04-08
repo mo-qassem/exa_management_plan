@@ -8,3 +8,8 @@
   roles:
     - common
     - user_setup
+    - opsview
+  tasks:
+    - name: Identify Linux distribution
+      set_fact:
+        linux_distribution: "{{ ansible_facts['distribution'] | lower }}"

@@ -3,10 +3,6 @@
     src: files/motd.txt
     dest: /etc/motd
 
-- name: Identify Linux distribution
-  set_fact:
-    linux_distribution: "{{ ansible_facts['distribution'] | lower }}"
-
 - name: Update 'YUM' package cache
   become: true
   become_user: root
