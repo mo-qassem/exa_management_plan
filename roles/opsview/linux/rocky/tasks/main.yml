@@ -85,5 +85,5 @@
 - name: Start 'Opsview' Agent
   service:
     name: opsview-agent
-    state: started
+    state: restarted
     enabled: yes
