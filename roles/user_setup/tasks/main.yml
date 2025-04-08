@@ -1,4 +1,8 @@
 ---
+- name: Print Linux distribution
+  debug:
+    msg: "This system is running {{ linux_distribution }}"
+
 - name: Create 'exadmn' User
   user:
     name: exadmn

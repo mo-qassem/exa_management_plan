@@ -5,11 +5,12 @@
   vars:
     ansible_user: "{{ survey_ansible_user }}"
     ansible_port: "{{ survey_ansible_port }}"
+
+  pre_tasks:
+    - name: Identify Linux distribution
+      set_fact:
+        linux_distribution: "{{ ansible_facts['distribution'] | lower }}"
   roles:
     - common
     - user_setup
     - opsview
-  tasks:
-    - name: Identify Linux distribution
-      set_fact:
-        linux_distribution: "{{ ansible_facts['distribution'] | lower }}"
