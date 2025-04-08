@@ -25,6 +25,10 @@
   set_fact:
     opsview_installed: "{{ ansible_facts.packages['opsview-agent'] is defined }}"
 
+- name: Print the result
+  debug:
+    msg: "The Agent is {{ opsview_installed }}"
+
 - name: Install 'Opsview' RPM package if not installed
   command: sudo rpm -i /tmp/opsview-agent-rhel.rpm
   args:
