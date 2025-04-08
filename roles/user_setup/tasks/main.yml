@@ -1,0 +1,33 @@
+---
+- name: Identify Linux distribution
+  set_fact:
+    linux_distribution: "{{ ansible_facts['distribution'] | lower }}"
+
+- name: Create 'exadmn' User
+  user:
+    name: exadmn
+    comment: Ansible-Tower-AdminUser
+    home: /home/exadmn
+    shell: /bin/bash
+
+- name: Setup .ssh for exadmn
+  file:
+    path: "/home/exadmn/.ssh"
+    state: directory
+    mode: "0700"
+    owner: exadmn
+    group: exadmn
+
+- name: Add Public Key
+  authorized_key:
+    user: exadmn
+    key: "{{ lookup('file', 'files/public_key.pub') }}"
+    state: present
+
+- name: Add sudo permissions
+  lineinfile:
+    path: /etc/sudoers
+    insertafter: "^## Allow root to run any commands anywhere"
+    line: "exadmn ALL=(ALL:ALL) NOPASSWD: ALL"
+    validate: "visudo -cf %s"
+  when: ansible_facts['os_family'] in ['RedHat', 'Debian']

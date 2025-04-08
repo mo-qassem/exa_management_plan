@@ -1,0 +1,12 @@
+---
+- name: Complete Server Setup
+  hosts: all
+  gather_facts: true
+  vars:
+    ansible_user: "{{ survey_ansible_user }}"
+    ansible_port: "{{ survey_ansible_port }}"
+  roles:
+    - common
+    - user_setup
+    - opsview
+    - backup/bareso
