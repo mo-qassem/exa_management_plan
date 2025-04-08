@@ -83,7 +83,7 @@
     mode: "0750"
 
 - name: Start 'Opsview' Agent
-  service:
+  systemd:
     name: opsview-agent
-    state: restarted
+    state: started
     enabled: yes
