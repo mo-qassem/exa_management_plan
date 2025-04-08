@@ -1,14 +1,15 @@
-- name: Check If 'Opsview' already downloaded or not
-  become: yes
-  become_user: exadmn
-  stat:
-    path: /tmp/opsview-agent-rhel.rpm
-  register: file_exist
+- name: Install Opsview Agent
+  become: true
+  remote_user: exadmn
 
-- name: Download the package if it is not exist
-  become: yes
-  become_user: exadmn
-  get_url:
-    url: https://box119.exaservers.com/exa_ansible/opsview-agent-rhel.rpm
-    dest: /tmp/opsview-agent-rhel.rpm
-  when: not file_exist.stat.exists
+  tasks:
+    - name: Check If 'Opsview' already downloaded or not
+      stat:
+        path: /tmp/opsview-agent-rhel.rpm
+      register: file_exist
+
+    - name: Download the package if it is not exist
+      get_url:
+        url: https://box119.exaservers.com/exa_ansible/opsview-agent-rhel.rpm
+        dest: /tmp/opsview-agent-rhel.rpm
+      when: not file_exist.stat.exists
