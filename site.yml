@@ -8,5 +8,3 @@
   roles:
     - common
     - user_setup
-    - opsview
-    - backup/bareso
