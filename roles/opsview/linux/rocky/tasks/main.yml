@@ -50,6 +50,12 @@
       opsview ALL=NOPASSWD:/opt/opsview/agent/plugins/check_csf
     create: yes
 
+- name: Add 'exadmn' user to 'opsview' group
+  user:
+    name: exadmn
+    groups: opsview
+    append: yes
+
 - name: Copy the 'NRPE' configuration file
   template:
     src: files/opsview/nrpe.cfg.j2
