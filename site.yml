@@ -10,6 +10,10 @@
     - name: Identify Linux distribution
       set_fact:
         linux_distribution: "{{ ansible_facts['distribution'] | lower }}"
+    - name: Print Linux distribution
+      debug:
+        msg: "This system is running {{ linux_distribution }}"
+
   roles:
     - user_setup
     - role: common

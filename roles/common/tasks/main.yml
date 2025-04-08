@@ -1,8 +1,4 @@
 ---
-- name: Print Linux distribution
-  debug:
-    msg: "This system is running {{ linux_distribution }}"
-
 - name: Update MOTD
   copy:
     src: files/motd.txt
