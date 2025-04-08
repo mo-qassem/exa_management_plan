@@ -28,9 +28,7 @@
   when: not csf_installed
 
 - name: Change to CSF directory and install CSF
-  become: true
-  become_user: root
   command:
-    cmd: "bash install.sh"
+    cmd: "sudo bash install.sh"
     chdir: "/tmp/csf"
   when: not csf_installed
