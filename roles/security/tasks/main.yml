@@ -1,0 +1,21 @@
+---
+- name: Gather RPM facts
+  package_facts:
+
+- name: Check if cPanel is installed
+  set_fact:
+    cpanel_installed: "{{ ansible_facts.packages['cpanel'] is defined }}"
+
+- name: Print the result
+  debug:
+    msg: "Are is cPanel Installed ?  {{ cpanel_installed }}"
+
+- name: Include CSF firewall role if cPanel is installed
+  include_role:
+    name: firewall/csf
+  when: cpanel_installed
+
+- name: Include iptables firewall role if cPanel is not installed
+  include_role:
+    name: firewall/iptables
+  when: not cpanel_installed

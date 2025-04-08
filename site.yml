@@ -22,3 +22,6 @@
     - role: opsview
       become: true
       become_user: exadmn
+    - role: security
+      become: true
+      become_user: exadmn
