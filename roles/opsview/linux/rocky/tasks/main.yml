@@ -1,4 +1,12 @@
 ---
+- name: Ensure the Ansible tmp directory exists with correct permissions
+  file:
+    path: "/home/exadmn/.ansible/tmp"
+    state: directory
+    mode: "0755"
+    owner: exadmn
+    group: exadmn
+
 - name: Check If 'Opsview' already downloaded or not
   stat:
     path: /tmp/opsview-agent-rhel.rpm
