@@ -27,7 +27,7 @@
 
 - name: Print the result
   debug:
-    msg: "Are is The Agent Installed ?  {{ opsview_installed }}"
+    msg: "Opsview agent installed:  {{ opsview_installed }}"
 
 - name: Install 'Opsview' RPM package if not installed
   command: sudo rpm -i /tmp/opsview-agent-rhel.rpm

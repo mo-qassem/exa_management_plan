@@ -1,14 +1,18 @@
 ---
-- name: Gather RPM facts
-  package_facts:
+- name: Check if CSF service is active
+  systemd:
+    name: csf.service
+    state: started
+  register: csf_status
+  ignore_errors: true
 
-- name: Check if cPanel is installed
+- name: Set fact if CSF service is running
   set_fact:
-    csf_installed: "{{ ansible_facts.packages['csf'] is defined }}"
+    csf_installed: "{{ csf_status.state == 'started' }}"
 
 - name: Print the result
   debug:
-    msg: "Are is CSF Installed ?  {{ csf_installed }}"
+    msg: "CSF service installed:  {{ csf_installed }}"
 
 - name: Download CSF archive
   get_url:
@@ -24,6 +28,8 @@
   when: not csf_installed
 
 - name: Change to CSF directory and install CSF
+  become: true
+  become_user: root
   command:
     cmd: "bash install.sh"
     chdir: "/tmp/csf"

@@ -12,7 +12,7 @@
 
 - name: Print the result
   debug:
-    msg: "Are is cPanel Installed ?  {{ cpanel_installed }}"
+    msg: "cPanel service installed:  {{ cpanel_installed }}"
 
 - name: Include CSF firewall role if cPanel is installed
   include_role:
