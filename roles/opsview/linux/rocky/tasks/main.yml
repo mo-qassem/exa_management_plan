@@ -36,6 +36,7 @@
   when: not opsview_installed
 
 - name: Add special permissions to 'Sudoers' file
+  become: true
   blockinfile:
     path: /etc/sudoers
     insertafter: "^## Allows members of the users group to shutdown this system"
