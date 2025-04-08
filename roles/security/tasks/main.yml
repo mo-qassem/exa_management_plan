@@ -16,10 +16,10 @@
 
 - name: Include CSF firewall role if cPanel is installed
   include_role:
-    name: firewall/csf
+    name: security/firewall/csf
   when: cpanel_installed
 
 - name: Include iptables firewall role if cPanel is not installed
   include_role:
-    name: firewall/iptables
+    name: security/firewall/iptables
   when: not cpanel_installed
