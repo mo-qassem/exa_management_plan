@@ -1,0 +1,56 @@
+---
+- name: Check if Maldetect service is active
+  systemd:
+    name: maldetect.service
+    state: started
+  register: maldetect_status
+  ignore_errors: true
+
+- name: Set fact if Maldetect service is running
+  set_fact:
+    maldetect_installed: "{{ (maldetect_status is defined)
+      and (not maldetect_status.failed | default(true))
+      and (maldetect_status.status is defined)
+      and (maldetect_status.status.ActiveState == 'active')
+      }}"
+
+- name: Print the result
+  debug:
+    msg: "Maldetect service installed:  {{ maldetect_installed }}"
+
+- name: Download Maldetect
+  get_url:
+    url: https://www.rfxn.com/downloads/maldetect-current.tar.gz
+    dest: /tmp/maldetect-current.tar.gz
+  when: not maldetect_installed
+
+- name: Extract Maldetect tar.gz
+  unarchive:
+    src: /tmp/maldetect-current.tar.gz
+    dest: /tmp/
+    remote_src: yes
+  when: not maldetect_installed
+
+- name: Find Maldetect extracted directory name
+  find:
+    paths: /tmp/
+    patterns: "maldetect-*"
+    file_type: directory
+  register: maldetect_dir
+  when: not maldetect_installed
+
+- name: Install Maldetect
+  command: sudo bash install.sh
+  args:
+    chdir: "{{ maldetect_dir.files[0].path }}"
+  when: not maldetect_installed
+
+- name: Update Maldet configuration options
+  lineinfile:
+    path: /usr/local/maldetect/conf.maldet
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+    backup: yes
+  loop:
+    - { regexp: "^#?email_alert=", line: 'email_alert="1"' }
+    - { regexp: "^#?email_addr=", line: 'email_addr="cpanel@exaserve.com"' }

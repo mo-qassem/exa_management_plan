@@ -45,6 +45,7 @@
     regexp: '^TESTING = "1"'
     line: 'TESTING = "0"'
     create: yes
+    backup: yes
 
 - name: Add allowed ports in 'csf.conf' file
   become: true
@@ -54,6 +55,7 @@
     regexp: "^{{ item.key }} = "
     line: '{{ item.key }} = "{{ item.value }}"'
     create: yes
+    backup: yes
   loop:
     - {
         key: "TCP_IN",

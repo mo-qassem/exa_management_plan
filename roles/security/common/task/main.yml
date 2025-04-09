@@ -1,0 +1,27 @@
+---
+- name: Ensure root login is enabled in SSH config
+  become: true
+  become_user: root
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: "^#?PermitRootLogin"
+    line: "PermitRootLogin yes"
+    create: yes
+    backup: yes
+
+- name: Ensure SSH port is set to 31262
+  become: true
+  become_user: root
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: "^#?Port"
+    line: "Port 31262"
+    create: yes
+    backup: yes
+
+- name: Restart SSH service to apply changes
+  become: true
+  become_user: root
+  service:
+    name: sshd
+    state: restarted

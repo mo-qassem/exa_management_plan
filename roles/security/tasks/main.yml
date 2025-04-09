@@ -27,3 +27,11 @@
   include_role:
     name: security/firewall/firewalld
   when: not cpanel_installed
+
+- name: Include the 'antiviruses' role
+  include_role:
+    name: security/antiviruses/maldetect
+
+- name: Include the 'common' role
+  include_role:
+    name: security/common
