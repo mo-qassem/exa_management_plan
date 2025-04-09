@@ -80,3 +80,11 @@
     name: csf
     state: started
     enabled: yes
+
+- name: Restart LFD using systemd
+  become: true
+  become_user: root
+  service:
+    name: lfd
+    state: started
+    enabled: yes
