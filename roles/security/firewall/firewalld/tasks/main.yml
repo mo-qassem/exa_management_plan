@@ -54,5 +54,9 @@
     - "31262/tcp"
 
 - name: Reload 'FirewallD' service to apply the changes
-  firewalld:
+  become: true
+  become_user: root
+  service:
+    name: firewalld
     state: reloaded
+    enabled: yes
