@@ -38,6 +38,8 @@
   when: not csf_installed
 
 - name: Change 'lfd will not start while this is enabled' in csf.conf file
+  become: true
+  become_user: root
   lineinfile:
     path: /etc/csf/csf.conf
     regexp: '^TESTING = "1"'
@@ -46,6 +48,8 @@
   when: not csf_installed
 
 - name: Add allowed ports in 'csf.conf' file
+  become: true
+  become_user: root
   lineinfile:
     path: /etc/csf/csf.conf
     regexp: "^{{ item.key }} = "
