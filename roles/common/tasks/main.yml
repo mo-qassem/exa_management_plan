@@ -21,7 +21,7 @@
     state: present
   when: linux_distribution in ['rocky', 'almalinux', 'cloudlinux', 'centos']
 
-- name: Install 'Opsview' dependencies
+- name: Install 'Useful' tools
   yum:
     name:
       - wget
@@ -36,7 +36,7 @@
     state: present
   when: linux_distribution in ['rocky', 'almalinux', 'cloudlinux', 'centos']
 
-- name: Install Opsview dependencies
+- name: Install 'Useful' tools
   apt:
     name:
       - wget

@@ -19,6 +19,8 @@
     msg: "FirewallD service active:  {{ firewalld_installed }}"
 
 - name: Ensure 'FirewallD' service is running
+  become: true
+  become_user: root
   service:
     name: firewalld
     state: started
