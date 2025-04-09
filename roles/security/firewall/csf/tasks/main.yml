@@ -71,7 +71,7 @@
     - { ip: "212.83.154.138", comment: "exa-bareos-server" }
 
 - name: Restart CSF
-  command: csf -r
+  command: sudo csf -r
 
 - name: Restart CSF using systemd
   service:
