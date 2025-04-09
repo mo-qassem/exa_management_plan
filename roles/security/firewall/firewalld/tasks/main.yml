@@ -1,0 +1,52 @@
+---
+- name: Check if FirewallD service is active
+  systemd:
+    name: firewalld.service
+    state: started
+  register: firewalld_status
+  ignore_errors: true
+
+- name: Set fact if FirewallD service is running
+  set_fact:
+    firewalld_installed: "{{ (firewalld_status is defined)
+      and (not firewalld_status.failed | default(true))
+      and (firewalld_status.status is defined)
+      and (firewalld_status.status.ActiveState == 'active')
+      }}"
+
+- name: Print the result
+  debug:
+    msg: "FirewallD service active:  {{ firewalld_installed }}"
+
+- name: Ensure 'FirewallD' service is running
+  service:
+    name: firewalld
+    state: started
+    enabled: yes
+  when: not firewalld_installed
+
+- name: Allow 'Opsview' and 'Bareos' IPs through FirewallD
+  firewalld:
+    zone: public
+    source: "{{ item.source }}"
+    state: enabled
+    permanent: true
+  loop:
+    - { source: "94.75.230.111/32" }
+    - { source: "212.83.154.138/32" }
+
+- name: Allow 'Opsview', 'Bareos', and 'SSHs' Ports through FirewallD
+  firewalld:
+    zone: public
+    port: "{{ item }}"
+    state: enabled
+    permanent: true
+  loop:
+    - "5666/tcp"
+    - "9101-9103/tcp"
+    - "2662/tcp"
+    - "31262/tcp"
+
+- name: Reload 'FirewallD' service to apply the changes
+  firewalld:
+    state: reloaded

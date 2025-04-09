@@ -8,7 +8,11 @@
 
 - name: Set fact if cPanel service is running
   set_fact:
-    cpanel_installed: "{{ cpanel_status.state == 'started' }}"
+    cpanel_installed: "{{ (cpanel_status is defined)
+      and (not cpanel_status.failed | default(true))
+      and (cpanel_status.status is defined)
+      and (cpanel_status.status.ActiveState == 'active')
+      }}"
 
 - name: Print the result
   debug:
@@ -21,5 +25,5 @@
 
 - name: Include iptables firewall role if cPanel is not installed
   include_role:
-    name: security/firewall/iptables
+    name: security/firewall/firewalld
   when: not cpanel_installed
