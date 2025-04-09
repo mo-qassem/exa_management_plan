@@ -33,6 +33,7 @@
       - iftop
       - ncdu
       - htop
+      - inotify-tools
     state: present
   when: linux_distribution in ['rocky', 'almalinux', 'cloudlinux', 'centos']
 
@@ -44,6 +45,7 @@
       - iftop
       - ncdu
       - htop
+      - inotify-tools
     state: present
   when: linux_distribution == 'ubuntu'
 
