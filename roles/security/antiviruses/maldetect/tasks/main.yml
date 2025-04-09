@@ -46,6 +46,8 @@
   when: not maldetect_installed
 
 - name: Update Maldet configuration options
+  become: true
+  become_user: root
   lineinfile:
     path: /usr/local/maldetect/conf.maldet
     regexp: "{{ item.regexp }}"
