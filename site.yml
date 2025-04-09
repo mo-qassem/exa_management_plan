@@ -19,7 +19,7 @@
     - role: common
       become: true
       remote_user: exadmn
-    - role: monitor
+    - role: opsview
       become: true
       become_user: exadmn
     - role: security
