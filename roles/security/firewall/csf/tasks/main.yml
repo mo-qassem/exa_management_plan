@@ -74,6 +74,8 @@
   command: sudo csf -r
 
 - name: Restart CSF using systemd
+  become: true
+  become_user: root
   service:
     name: csf
     state: started
