@@ -28,7 +28,9 @@
   when: not firewalld_installed
 
 - name: Allow 'Opsview' and 'Bareos' IPs through FirewallD
-  ansible.posix.firewalld:
+  become: true
+  become_user: root
+  firewalld:
     zone: public
     source: "{{ item.source }}"
     state: enabled
@@ -38,7 +40,9 @@
     - { source: "212.83.154.138/32" }
 
 - name: Allow 'Opsview', 'Bareos', and 'SSHs' Ports through FirewallD
-  ansible.posix.firewalld:
+  become: true
+  become_user: root
+  firewalld:
     zone: public
     port: "{{ item }}"
     state: enabled
@@ -50,5 +54,5 @@
     - "31262/tcp"
 
 - name: Reload 'FirewallD' service to apply the changes
-  ansible.posix.firewalld:
+  firewalld:
     state: reloaded
