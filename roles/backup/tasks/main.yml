@@ -2,10 +2,7 @@
 - name: First stage of the backup process - Registration
   include_role:
     name: backup/bareos/registration
-  delegate_to: "{{ hostvars['bareos']['ansible_host'] }}"
-  ansible_ssh_user: "{{ hostvars['bareos']['ansible_user'] }}"
-  ansible_ssh_port: "{{ hostvars['bareos']['ansible_port'] }}"
-  ansible_ssh_private_key_file: "{{ hostvars['bareos']['ansible_ssh_private_key_file'] }}"
+  delegate_to: bareos-server
 
 - name: Second stage of the backup process - Configuration
   include_role:
