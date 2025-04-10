@@ -3,7 +3,7 @@
   stat:
     path: "/etc/bareos/bareos-dir.d/client/{{ inventory_hostname }}.conf"
   register: client_exist
-  delegate_to: "{{ groups['bareos_server'][0] }}"
+  delegate_to: bareos_backup_server
 
 - name: Rename Bareos configuration files by appending .del
   vars:

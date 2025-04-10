@@ -1,6 +1,6 @@
 ---
 - name: Complete Server Setup
-  hosts: all
+  hosts: managed-hosts
   gather_facts: true
 
   pre_tasks:
