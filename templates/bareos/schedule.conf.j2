@@ -1,0 +1,4 @@
+Schedule {
+	Name = {{ inventory_hostname }}_schedule
+	Run = Level=Full Pool={{ inventory_hostname }}_full jan-dec on {{ backup_date }} at {{ backup_time }}:00
+}

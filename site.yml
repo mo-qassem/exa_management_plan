@@ -12,13 +12,13 @@
         linux_distribution: "{{ ansible_facts['distribution'] | lower }}"
     - name: Print Linux distribution
       debug:
-        msg: "This system is running {{ linux_distribution }}"
+        msg: "This system is running {{ linux_distribution }} Dist"
 
   roles:
     - user_setup
     - role: common
       become: true
-      remote_user: exadmn
+      become_user: exadmn
     - role: opsview
       become: true
       become_user: exadmn

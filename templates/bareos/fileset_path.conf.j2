@@ -1,0 +1,24 @@
+FileSet {
+	Name = {{ inventory_hostname }}_path
+	Include {
+		Options {
+			Signature = MD5
+			Compression = GZIP6
+		}
+		File = /home
+		#Backup CPanel's today's Backup
+		#File = "|sh -c \"echo -n /backup/\$(date '+%%F') \""
+		#Plugin = "python:module_path=/usr/lib64/bareos/plugins:module_name=bareos-fd-mysql"
+		#windows example (note: use forward slash instead of back slash)
+		#File = c:/
+		#File = d:/
+	}
+	#Exclude {
+		#File = c:/Windows
+		#File = "c:/Program Files"
+		#File = "c:/Program Files (x86)"
+		#File = c:/Boot
+		#File = c:/Users
+		#File = c:/ProgramData
+	#}
+}

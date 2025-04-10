@@ -1,0 +1,13 @@
+Job {
+	Name = {{ inventory_hostname }}
+	Type = Backup
+	Level = Full
+	Client = {{ inventory_hostname }}
+	Accurate = yes
+	FileSet = {{ inventory_hostname }}_path
+	Storage = {{ backup_server }}
+	Pool = {{ inventory_hostname }}_full
+	Schedule = {{ inventory_hostname }}_schedule
+	Messages = Standard
+	Write Bootstrap = "/backup/bootstrap_files/%j_%l_%i_%e.bsr"
+}

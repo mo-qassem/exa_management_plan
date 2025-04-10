@@ -1,0 +1,53 @@
+---
+- name: Check if backup client already exists
+  stat:
+    path: "/etc/bareos/bareos-dir.d/client/{{ inventory_hostname }}.conf"
+  register: client_exist
+
+- name: Rename Bareos configuration files by appending .del
+  vars:
+    config_files:
+      - "/etc/bareos/bareos-dir.d/client/{{ inventory_hostname }}.conf"
+      - "/etc/bareos/bareos-dir.d/storage/{{ inventory_hostname }}-storage.conf"
+      - "/etc/bareos/bareos-sd.d/device/{{ inventory_hostname }}-SD.conf"
+      - "/etc/bareos/bareos-dir.d/job/{{ inventory_hostname }}.conf"
+      - "/etc/bareos/bareos-dir.d/pool/{{ inventory_hostname }}_full.conf"
+      - "/etc/bareos/bareos-dir.d/pool/{{ inventory_hostname }}_incremental.conf"
+      - "/etc/bareos/bareos-dir.d/schedule/{{ inventory_hostname }}_schedule.conf"
+      - "/etc/bareos/bareos-dir.d/fileset/{{ inventory_hostname }}_path.conf"
+  loop: "{{ config_files }}"
+  loop_control:
+    label: "{{ item }}"
+  ansible.builtin.command: mv {{ item }} {{ item }}.del
+  ignore_errors: true
+  when: client_exist.stat.exists
+
+- name: Create Bareos configuration files
+  template:
+    src: "templates/bareos/{{ item.src }}"
+    dest: "/etc/bareos/bareos-dir.d/{{ item.dest }}"
+    owner: bareos
+    group: bareos
+    mode: "0644"
+  loop:
+    - { src: "client.conf.j2", dest: "client/{{ inventory_hostname }}.conf" }
+    - { src: "job.conf.j2", dest: "job/{{ inventory_hostname }}.conf" }
+    - {
+        src: "pool_full.conf.j2",
+        dest: "pool/{{ inventory_hostname }}_full.conf",
+      }
+    - {
+        src: "schedule.conf.j2",
+        dest: "schedule/{{ inventory_hostname }}_schedule.conf",
+      }
+    - {
+        src: "fileset_path.conf.j2",
+        dest: "fileset/{{ inventory_hostname }}_path.conf",
+      }
+
+- name: Set ownership of Bareos directory
+  file:
+    path: "/etc/bareos/"
+    owner: bareos
+    group: bareos
+    recurse: yes
