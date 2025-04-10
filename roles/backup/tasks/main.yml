@@ -2,7 +2,6 @@
 - name: First stage of the backup process - Registration
   include_role:
     name: backup/bareos/registration
-  delegate_to: bareos-server
 
 - name: Second stage of the backup process - Configuration
   include_role:

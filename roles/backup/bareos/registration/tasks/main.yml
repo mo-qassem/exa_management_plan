@@ -3,6 +3,7 @@
   stat:
     path: "/etc/bareos/bareos-dir.d/client/{{ inventory_hostname }}.conf"
   register: client_exist
+  delegate_to: bareos-server
 
 - name: Rename Bareos configuration files by appending .del
   vars:
@@ -21,6 +22,7 @@
   ansible.builtin.command: mv {{ item }} {{ item }}.del
   ignore_errors: true
   when: client_exist.stat.exists
+  delegate_to: bareos-server
 
 - name: Create Bareos configuration files
   template:
