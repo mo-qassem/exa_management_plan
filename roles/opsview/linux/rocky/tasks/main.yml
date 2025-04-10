@@ -37,7 +37,6 @@
 
 - name: Add special permissions to 'Sudoers' file
   become: true
-  become_user: root
   blockinfile:
     path: /etc/sudoers
     insertafter: "^## Allows members of the users group to shutdown this system"
