@@ -15,13 +15,13 @@
     - user_setup
     - role: common
       become: true
-      become_user: exadmn
+      remote_user: exadmn
     - role: opsview
       become: true
-      become_user: exadmn
+      remote_user: exadmn
     - role: backup
       become: true
-      become_user: exadmn
+      remote_user: exadmn
     - role: security
       become: true
       become_user: exadmn
