@@ -1,3 +1,4 @@
+---
 - name: First stage of the backup process - Registration
   include_role:
     name: backup/bareos/registration
