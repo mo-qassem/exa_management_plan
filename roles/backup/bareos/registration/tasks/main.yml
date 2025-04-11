@@ -22,6 +22,7 @@
   ansible.builtin.command: mv {{ item }} {{ item }}.del
   ignore_errors: true
   when: client_exist.stat.exists
+  delegate_to: bareos_backup_server
 
 - name: Create Bareos configuration files
   template:
@@ -45,6 +46,7 @@
         src: "fileset_path.conf.j2",
         dest: "fileset/{{ inventory_hostname }}_path.conf",
       }
+  delegate_to: bareos_backup_server
 
 - name: Set ownership of Bareos directory
   file:
@@ -52,3 +54,4 @@
     owner: bareos
     group: bareos
     recurse: yes
+  delegate_to: bareos_backup_server
