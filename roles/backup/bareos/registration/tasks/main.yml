@@ -5,6 +5,10 @@
   register: client_exist
   delegate_to: bareos_backup_server
 
+- name: Print the result
+  debug:
+    msg: "The client is:  {{ client_exist }}"
+
 - name: Rename Bareos configuration files by appending .del
   vars:
     config_files:
