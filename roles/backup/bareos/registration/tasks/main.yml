@@ -7,7 +7,7 @@
 
 - name: Print the result
   debug:
-    msg: "The client is:  {{ client_exist }}"
+    msg: "The client is exist:  {{ client_exist.exists }}"
 
 - name: Rename Bareos configuration files by appending .del
   vars:
