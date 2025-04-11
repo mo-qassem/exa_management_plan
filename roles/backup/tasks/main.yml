@@ -5,4 +5,4 @@
 
 - name: Second stage of the backup process - Configuration
   include_role:
-    name: bareos/configuration
+    name: backup/bareos/configuration

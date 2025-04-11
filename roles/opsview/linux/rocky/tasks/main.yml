@@ -36,7 +36,6 @@
   when: not opsview_installed
 
 - name: Add special permissions to 'Sudoers' file
-  become: true
   blockinfile:
     path: /etc/sudoers
     insertafter: "^## Allows members of the users group to shutdown this system"
@@ -50,22 +49,16 @@
     create: yes
 
 - name: Copy the 'NRPE' configuration file
-  become: true
-  become_user: root
   template:
     src: files/opsview/nrpe.cfg.j2
     dest: /opt/opsview/agent/etc/nrpe.cfg
 
 - name: Copy the 'check_bandwidth_quota' file
-  become: true
-  become_user: root
   template:
     src: files/opsview/check_bandwidth_quota.sh.j2
     dest: /opt/opsview/agent/plugins/check_bandwidth_quota.sh
 
 - name: Copy the 'check_csf' file
-  become: true
-  become_user: root
   copy:
     src: files/opsview/check_csf
     dest: /opt/opsview/agent/plugins
@@ -73,8 +66,6 @@
     mode: "0750"
 
 - name: Copy the 'check_eximmailqueue' file
-  become: true
-  become_user: root
   copy:
     src: files/opsview/check_eximmailqueue
     dest: /opt/opsview/agent/plugins
@@ -82,8 +73,6 @@
     mode: "0750"
 
 - name: Start 'Opsview' Agent
-  become: true
-  become_user: root
   service:
     name: opsview-agent
     state: started
