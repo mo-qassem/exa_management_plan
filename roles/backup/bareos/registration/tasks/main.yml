@@ -7,7 +7,7 @@
 
 - name: Print the result
   debug:
-    msg: "The client is exist:  {{ client_exist.stat.exists}}"
+    msg: "The client is exist: {{ client_exist.stat.exists}}"
 
 - name: Rename Bareos configuration files by appending .del
   vars:
@@ -25,6 +25,22 @@
     label: "{{ item }}"
   ansible.builtin.command: mv {{ item }} {{ item }}.del
   ignore_errors: true
+  when: client_exist.stat.exists
+  delegate_to: bareos_backup_server
+
+- name: Find and delete old Bareos client configs
+  find:
+    paths: /etc/bareos
+    patterns: "{{ inventory_hostname }}*del"
+  register: bareos_files_to_delete
+  when: client_exist.stat.exists
+  delegate_to: bareos_backup_server
+
+- name: Remove matched Bareos client config files
+  file:
+    path: "{{ item.path }}"
+    state: absent
+  loop: "{{ bareos_files_to_delete.files }}"
   when: client_exist.stat.exists
   delegate_to: bareos_backup_server
 
