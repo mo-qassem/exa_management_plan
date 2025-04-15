@@ -27,18 +27,16 @@
 - name: Extract 'BitDefender' tar
   unarchive:
     src: /tmp/setup_downloader.tar
-    dest: /tmp/
+    dest: /root
     remote_src: yes
   when: not bdsec_installed
 
 - name: Make 'BitDefender' installer executable
   file:
-    path: /tmp/installer
+    path: /root/installer
     mode: "0755"
 
 - name: Run the installer script
-  become: true
-  become_user: root
   command: ./installer
   args:
     chdir: /tmp
