@@ -1,0 +1,16 @@
+#! /bin/bash
+
+#Backup system  configuration
+
+cd /home/exabackup/system/
+sudo rm -rf whm-config-backup-*
+sudo /usr/local/cpanel/bin/cpconftool --backup --modules=cpanel::easy::apache,cpanel::smtp::exim,cpanel::system::backups,cpanel::system::mysql,cpanel::system::whmconf,cpanel::ui::themes
+mv /home/whm-config-backup-* /home/exabackup/system/
+
+
+#Backup cpanel accounts without homedir data
+
+for backup in `\ls /var/cpanel/users/`;
+do
+sudo /scripts/pkgacct --skiphomedir --skipbwdata -skiplogs $backup /home/exabackup/accounts/;
+done

@@ -58,23 +58,17 @@
       }
 
 - name: Download and extract 'TLS' files
-  become: true
-  become_user: root
   get_url:
     url: https://box119.exaservers.com/tls.tar.gz
     dest: /tmp/tls.tar.gz
 
 - name: Extract 'TLS' files to 'Bareos' directory
-  become: true
-  become_user: root
-  ansible.builtin.unarchive:
+  unarchive:
     src: /tmp/tls.tar.gz
     dest: /etc/bareos/
     remote_src: yes
 
 - name: Set ownership of 'Bareos' directory
-  become: true
-  become_user: root
   file:
     path: /etc/bareos/
     owner: bareos
@@ -82,8 +76,36 @@
     recurse: yes
 
 - name: Restart 'Bareos File-Daemon'
-  become: true
-  become_user: root
   service:
     name: bareos-fd
     state: restarted
+
+- name: Set calculated cron days
+  set_fact:
+    before_backup: "{{ (backup_date | int) - 1 }}"
+    after_backup: "{{ (backup_date | int) + 5 }}"
+  when: cpanel_installed
+
+- name: Create backup cron job (before backup_date)
+  cron:
+    name: "Backup users home directory"
+    user: root
+    minute: "0"
+    hour: "0"
+    day: "{{ before_backup }}"
+    month: "*"
+    weekday: "*"
+    job: "for user in `ls /var/cpanel/users | grep -v '\\.'`; do /scripts/pkgacct --skiphomedir $user /home ; done"
+  when: cpanel_installed
+
+- name: Create cleanup cron job (after backup_date)
+  cron:
+    name: "Clean old cpmove backups"
+    user: root
+    minute: "0"
+    hour: "0"
+    day: "{{ after_backup }}"
+    month: "*"
+    weekday: "*"
+    job: "find /home -type f -name 'cpmove-*' -exec rm -rf {} \\;"
+  when: cpanel_installed
