@@ -1,0 +1,10 @@
+Client {
+        Name = {{ inventory_hostname }}
+        Maximum Concurrent Jobs = 20
+        TLS Enable = yes
+        TLS Require = yes
+        TLS CA Certificate File = /etc/bareos/tls/dir_ca.crt
+        TLS Certificate = /etc/bareos/tls/dir.crt
+        TLS Key = /etc/bareos/tls/dir.key
+        TLS Allowed CN = "*.exaservers.com"
+}
