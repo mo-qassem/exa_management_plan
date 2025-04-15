@@ -37,6 +37,6 @@
     mode: "0755"
 
 - name: Run the installer script
-  command: ./installer
+  command: sudo ./installer
   args:
     chdir: /tmp
