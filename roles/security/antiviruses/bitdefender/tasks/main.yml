@@ -1,0 +1,42 @@
+---
+- name: Check if 'BitDefender' service is active
+  systemd:
+    name: bdsec.service
+    state: started
+  register: bdsec_status
+  ignore_errors: true
+
+- name: Set fact if 'BitDefender' service is running
+  set_fact:
+    bdsec_installed: "{{ (bdsec_status is defined)
+      and (not bdsec_status.failed | default(true))
+      and (bdsec_status.status is defined)
+      and (bdsec_status.status.ActiveState == 'active')
+      }}"
+
+- name: Print the result
+  debug:
+    msg: "BitDefender service installed:  {{ bdsec_installed }}"
+
+- name: Download the package if it is not exist
+  get_url:
+    url: https://cloudgz.gravityzone.bitdefender.com/Packages/NIX/0/5Ae1Jm/setup_downloader.tar
+    dest: /tmp/setup_downloader.tar
+  when: not bdsec_installed
+
+- name: Extract 'BitDefender' tar
+  unarchive:
+    src: /tmp/setup_downloader.tar
+    dest: /tmp/
+    remote_src: yes
+  when: not bdsec_installed
+
+- name: Make 'BitDefender' installer executable
+  file:
+    path: /tmp/installer
+    mode: "0755"
+
+- name: Run the installer script
+  command: ./installer
+  args:
+    chdir: /tmp
