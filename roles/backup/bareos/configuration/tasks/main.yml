@@ -14,3 +14,76 @@
   when:
     - linux_distribution == 'ubuntu'
     - linux_version in ['20', '22', '24']
+
+- name: Run the script to add the repository
+  command: "sudo bash /tmp/add_bareos_repositories.sh"
+
+- name: Update packages cache on RHEL-based distros
+  yum:
+    update_cache: yes
+  when: linux_distribution in ['centos', 'rocky', 'almaLinux', 'cloudLinux']
+
+- name: Update packages cache on Debian-based distros
+  apt:
+    update_cache: yes
+  when: linux_distribution == 'ubuntu'
+
+- name: Install 'Bareos' File Daemon on RHEL-based distros
+  yum:
+    name: bareos-fd
+    state: present
+  when: linux_distribution in ['centos', 'rocky', 'almaLinux', 'cloudLinux']
+
+- name: Install 'Bareos' File Daemon on Debian-based distros
+  apt:
+    name: bareos
+    state: present
+  when: linux_distribution == 'ubuntu'
+
+- name: Configure Bareos settings
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    owner: bareos
+    group: bareos
+    mode: "0644"
+  loop:
+    - {
+        src: "templates/client.conf.j2",
+        dest: "/etc/bareos/bareos-fd.d/client/myself.conf",
+      }
+    - {
+        src: "templates/director.conf.j2",
+        dest: "/etc/bareos/bareos-fd.d/director/bareos-dir.conf",
+      }
+
+- name: Download and extract 'TLS' files
+  become: true
+  become_user: root
+  get_url:
+    url: https://box119.exaservers.com/tls.tar.gz
+    dest: /tmp/tls.tar.gz
+
+- name: Extract 'TLS' files to 'Bareos' directory
+  become: true
+  become_user: root
+  ansible.builtin.unarchive:
+    src: /tmp/tls.tar.gz
+    dest: /etc/bareos/
+    remote_src: yes
+
+- name: Set ownership of 'Bareos' directory
+  become: true
+  become_user: root
+  file:
+    path: /etc/bareos/
+    owner: bareos
+    group: bareos
+    recurse: yes
+
+- name: Restart 'Bareos File-Daemon'
+  become: true
+  become_user: root
+  service:
+    name: bareos-fd
+    state: restarted
