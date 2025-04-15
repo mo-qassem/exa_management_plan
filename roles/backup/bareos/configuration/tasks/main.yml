@@ -94,7 +94,7 @@
 
 - name: Create backup cron job (before backup_date)
   cron:
-    name: "Backup users home directory"
+    name: "Backup users without home directory"
     user: root
     minute: "0"
     hour: "0"

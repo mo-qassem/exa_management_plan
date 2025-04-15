@@ -1,0 +1,74 @@
+---
+- name: Ensure bind-address is set in MySQL config
+  become: true
+  lineinfile:
+    path: /etc/my.cnf
+    regexp: "^bind-address"
+    line: "bind-address=127.0.0.1"
+    create: yes
+    backup: yes
+  notify: Restart MySQL Service
+
+- name: Set server contact email
+  command: whmapi1 set_tweaksetting key=servercontact value=cpanel@exaserve.com
+
+- name: Set nameservers
+  command: whmapi1 set_nameserver_names nameserver1=ns1.exaservers.com nameserver2=ns2.exaservers.com
+
+- name: Set system timezone to Asia/Riyadh
+  command: timedatectl set-timezone Asia/Riyadh
+
+- name: Configure backup settings
+  command: >
+    whmapi1 backup_config_set 
+    backup_enable=1 
+    backup_type=incremental 
+    backup_daily_enable=1 
+    backup_daily_retention=1 
+    backup_weekly_enable=1 
+    backup_weekly_retention=1 
+    backup_weekly_day=Friday 
+    backup_system_files=1 
+    backup_account_databases=1 
+    backup_extra_features=1 
+    force_prune_daily=1 
+    force_prune_weekly=1
+
+- name: Disable traceroute tweak
+  command: whmapi1 update_traceroute_tweak state=0
+
+- name: Enable SMTP Restrictions
+  command: whmapi1 set_smtprestrictions enabled=1
+
+- name: Disable compilers
+  command: whmapi1 set_compilers enable_compilers=0 unprivileged_compilers=0
+
+- name: Enable shell fork bomb protection
+  command: whmapi1 set_tweaksetting key=shellforkbombprotect value=1
+
+- name: Enable SpamAssassin
+  command: whmapi1 set_tweaksetting key=spamassassin value=1
+
+- name: Set SpamAssassin reject score
+  command: whmapi1 set_tweaksetting key=reject_spam_score_over value=5
+
+- name: Set SpamAssassin rate limit score
+  command: whmapi1 set_tweaksetting key=ratelimit_spam_score value=5
+
+- name: Rewrite From header
+  command: whmapi1 set_tweaksetting key=rewrite_from_fromto value=all
+
+- name: Add Spamhaus RBL
+  command: whmapi1 add_rbl rblname=zen.spamhaus.org rblinfo="Spamhaus zen" rblenabled=1
+
+- name: Add Spamcop RBL
+  command: whmapi1 add_rbl rblname=bl.spamcop.net rblinfo="Spamcop bl" rblenabled=1
+
+- name: Configure pure-ftpd service
+  command: whmapi1 configureservice service=ftp driver=pure-ftpd enabled=1 monitored=1
+
+- name: Restart Exim service
+  command: /scripts/restartsrv_exim
+
+- name: Restart Pure-FTPd service
+  command: /scripts/restartsrv_pureftpd

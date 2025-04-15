@@ -56,11 +56,4 @@
   loop:
     - { regexp: "^#?email_alert=", line: 'email_alert="1"' }
     - { regexp: "^#?email_addr=", line: 'email_addr="cpanel@exaserve.com"' }
-
-- name: Restart 'Maldet' using systemd
-  become: true
-  become_user: root
-  service:
-    name: maldet
-    state: started
-    enabled: yes
+  notify: Restart Maldet Service

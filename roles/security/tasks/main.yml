@@ -32,6 +32,11 @@
   include_role:
     name: security/antiviruses/maldetect
 
+- name: Include the 'cpanel' role
+  include_role:
+    name: security/cpanel
+  when: cpanel_installed
+
 - name: Include the 'common' role
   include_role:
     name: security/common
