@@ -1,0 +1,8 @@
+---
+- name: Reload FirewallD Service
+  become: true
+  become_user: root
+  service:
+    name: firewalld
+    state: reloaded
+    enabled: yes

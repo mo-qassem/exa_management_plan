@@ -8,6 +8,7 @@
     line: "PermitRootLogin yes"
     create: yes
     backup: yes
+  notify: Restart SSH Service
 
 - name: Ensure SSH port is set to 31262
   become: true
@@ -18,10 +19,4 @@
     line: "Port 31262"
     create: yes
     backup: yes
-
-- name: Restart SSH service to apply changes
-  become: true
-  become_user: root
-  service:
-    name: sshd
-    state: restarted
+  notify: Restart SSH Service

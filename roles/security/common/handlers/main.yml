@@ -1,0 +1,7 @@
+---
+- name: Restart SSH Service
+  become: true
+  become_user: root
+  service:
+    name: sshd
+    state: restarted
