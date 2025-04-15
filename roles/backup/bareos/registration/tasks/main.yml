@@ -13,11 +13,8 @@
   vars:
     config_files:
       - "/etc/bareos/bareos-dir.d/client/{{ inventory_hostname }}.conf"
-      - "/etc/bareos/bareos-dir.d/storage/{{ inventory_hostname }}-storage.conf"
-      - "/etc/bareos/bareos-sd.d/device/{{ inventory_hostname }}-SD.conf"
       - "/etc/bareos/bareos-dir.d/job/{{ inventory_hostname }}.conf"
       - "/etc/bareos/bareos-dir.d/pool/{{ inventory_hostname }}_full.conf"
-      - "/etc/bareos/bareos-dir.d/pool/{{ inventory_hostname }}_incremental.conf"
       - "/etc/bareos/bareos-dir.d/schedule/{{ inventory_hostname }}_schedule.conf"
       - "/etc/bareos/bareos-dir.d/fileset/{{ inventory_hostname }}_path.conf"
   loop: "{{ config_files }}"

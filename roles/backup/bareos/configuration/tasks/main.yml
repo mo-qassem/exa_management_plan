@@ -49,11 +49,11 @@
     mode: "0644"
   loop:
     - {
-        src: "templates/myself.conf.j2",
+        src: "templates/bareos/myself.conf.j2",
         dest: "/etc/bareos/bareos-fd.d/client/myself.conf",
       }
     - {
-        src: "templates/director.conf.j2",
+        src: "templates/bareos/director.conf.j2",
         dest: "/etc/bareos/bareos-fd.d/director/bareos-dir.conf",
       }
 
