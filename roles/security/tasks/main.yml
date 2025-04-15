@@ -32,6 +32,10 @@
   include_role:
     name: security/antiviruses/maldetect
 
+- name: Include the 'antiviruses' role
+  include_role:
+    name: security/antiviruses/bitdefender
+
 - name: Include the 'common' role
   include_role:
     name: security/common
