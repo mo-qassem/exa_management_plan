@@ -1,9 +1,15 @@
 ---
+- name: Check If 'Bareos Repo Script' already downloaded or not
+  stat:
+    path: /tmp/add_bareos_repositories.sh
+  register: file_exist
+
 - name: Download and configure 'Bareos' repository for RHEL-based distros
   get_url:
     url: "https://download.bareos.org/current/EL_{{ linux_version }}/add_bareos_repositories.sh"
     dest: /tmp/add_bareos_repositories.sh
   when:
+    - when: not file_exist.stat.exists
     - linux_distribution in ['centos', 'rocky', 'almaLinux', 'cloudLinux']
     - linux_version in ['7', '8', '9']
 
@@ -12,11 +18,13 @@
     url: "https://download.bareos.org/current/xUbuntu_{{ linux_version }}.04/add_bareos_repositories.sh"
     dest: /tmp/add_bareos_repositories.sh
   when:
+    - when: not file_exist.stat.exists
     - linux_distribution == 'ubuntu'
     - linux_version in ['20', '22', '24']
 
 - name: Run the script to add the repository
   command: "sudo bash /tmp/add_bareos_repositories.sh"
+  when: not file_exist.stat.exists
 
 - name: Update packages cache on RHEL-based distros
   yum:
@@ -56,6 +64,7 @@
         src: "templates/bareos/director.conf.j2",
         dest: "/etc/bareos/bareos-fd.d/director/bareos-dir.conf",
       }
+  notify: Restart Bareos File-Daemon
 
 - name: Download and extract 'TLS' files
   get_url:
@@ -67,6 +76,7 @@
     src: /tmp/tls.tar.gz
     dest: /etc/bareos/
     remote_src: yes
+  notify: Restart Bareos File-Daemon
 
 - name: Set ownership of 'Bareos' directory
   file:
@@ -74,11 +84,7 @@
     owner: bareos
     group: bareos
     recurse: yes
-
-- name: Restart 'Bareos File-Daemon'
-  service:
-    name: bareos-fd
-    state: restarted
+  notify: Restart Bareos File-Daemon
 
 - name: Set calculated cron days
   set_fact:
