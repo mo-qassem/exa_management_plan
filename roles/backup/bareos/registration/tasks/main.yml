@@ -27,6 +27,7 @@
 
 - name: Find and delete old Bareos client configs
   find:
+    recurse: true
     paths: /etc/bareos
     patterns: "{{ inventory_hostname }}*del"
   register: bareos_files_to_delete
