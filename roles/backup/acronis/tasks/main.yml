@@ -31,5 +31,5 @@
   when: not acronis_installed
 
 - name: Run the installer script
-  command: screen -dmS acronis sudo bash -c "/root/CyberProtect_AgentForLinux_x86_64.bin"
+  command: screen -dmS acronis bash -c "/root/CyberProtect_AgentForLinux_x86_64.bin"
   when: not acronis_installed
