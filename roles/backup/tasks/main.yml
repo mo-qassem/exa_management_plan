@@ -2,12 +2,14 @@
 - name: First stage of the backup process - Registration
   include_role:
     name: backup/bareos/registration
+  when: not prof_mgmt | bool
 
 - name: Second stage of the backup process - Configuration
   include_role:
     name: backup/bareos/configuration
+  when: not prof_mgmt | bool
 
 - name: Make it Professional by installing Acronis
   include_role:
     name: backup/acronis
-  when: "'professional_hosts' in group_names"
+  when: prof_mgmt | bool
