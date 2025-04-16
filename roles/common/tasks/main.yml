@@ -4,6 +4,18 @@
     src: files/motd.txt
     dest: /etc/motd
 
+- name: Install Percona release 'RHEL' repository package
+  yum:
+    name: https://repo.percona.com/yum/percona-release-latest.noarch.rpm
+    state: present
+  when: linux_distribution in ['rocky', 'almalinux', 'cloudlinux', 'centos']
+
+- name: Enable only Percona Tools repository
+  command: percona-release enable-only tools
+  args:
+    creates: /etc/yum.repos.d/percona-tools.repo
+  when: linux_distribution in ['rocky', 'almalinux', 'cloudlinux', 'centos']
+
 - name: Update 'RHEL' package cache
   yum:
     update_cache: yes
@@ -36,6 +48,7 @@
       - inotify-tools
       - rkhunter
       - screen
+      - percona-toolkit
     state: present
   when: linux_distribution in ['rocky', 'almalinux', 'cloudlinux', 'centos']
 
