@@ -35,6 +35,7 @@
 - name: Include the 'antiviruses' role
   include_role:
     name: security/antiviruses/bitdefender
+  when: prof_mgmt | bool
 
 - name: Include the 'common' role
   include_role:

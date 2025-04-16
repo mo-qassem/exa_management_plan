@@ -1,6 +1,6 @@
 ---
 - name: Complete Server Setup
-  hosts: basic_advanced_hosts
+  hosts: managed_hosts
   gather_facts: true
 
   pre_tasks:
