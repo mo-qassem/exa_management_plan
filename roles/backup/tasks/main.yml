@@ -10,3 +10,4 @@
 - name: Make it Professional by installing Acronis
   include_role:
     name: backup/acronis
+  when: "'pro' in group_names"

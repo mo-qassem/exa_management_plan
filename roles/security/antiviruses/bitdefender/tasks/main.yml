@@ -34,7 +34,7 @@
 - name: Make 'BitDefender' installer executable
   file:
     path: /root/installer
-    mode: "0755"
+    mode: "0750"
   when: not bdsec_installed
 
 - name: Run the installer script

@@ -27,9 +27,24 @@
 - name: Make 'Acronis' installer executable
   file:
     path: /root/CyberProtect_AgentForLinux_x86_64.bin
-    mode: "0755"
+    mode: "0750"
   when: not acronis_installed
 
 - name: Run the installer script
   command: screen -dmS acronis bash -c "/root/CyberProtect_AgentForLinux_x86_64.bin"
   when: not acronis_installed
+
+- name: Create exabackup directories for system and accounts
+  file:
+    path: "{{ item }}"
+    state: directory
+    mode: "0755"
+  loop:
+    - /home/exabackup/system
+    - /home/exabackup/accounts
+
+- name: Copy the pre-backup-script
+  copy:
+    src: files/acronis/pre-backup-script
+    dest: /home/exabackup
+    mode: "0750"
