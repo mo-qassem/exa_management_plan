@@ -1,0 +1,31 @@
+---
+- name: Check if 'Acronis' service is active
+  systemd:
+    name: acronis_mms.service
+    state: started
+  register: acronis_status
+  ignore_errors: true
+
+- name: Set fact if 'Acronis' service is running
+  set_fact:
+    acronis_installed: "{{ (acronis_status is defined)
+      and (not acronis_status.failed | default(true))
+      and (acronis_status.status is defined)
+      and (acronis_status.status.ActiveState == 'active')
+      }}"
+
+- name: Print the result
+  debug:
+    msg: "Acronis service installed:  {{ acronis_installed }}"
+
+- name: Download the package if it is not exist
+  get_url:
+    url: https://eu8-cloud.acronis.com/download/u/baas/4.0/25.3.39752/CyberProtect_AgentForLinux_x86_64.bin
+    dest: /root
+  when: not acronis_installed
+
+- name: Make 'Acronis' installer executable
+  file:
+    path: /root/CyberProtect_AgentForLinux_x86_64.bin
+    mode: "0755"
+  when: not acronis_installed

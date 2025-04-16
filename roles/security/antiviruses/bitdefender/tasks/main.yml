@@ -35,8 +35,14 @@
   file:
     path: /root/installer
     mode: "0755"
+  when: not bdsec_installed
 
 - name: Run the installer script
   command: ./installer
   args:
     chdir: /root
+  when: not bdsec_installed
+
+- name: Update 'BitDefender' Signatures and Product
+  command: /opt/bitdefender-security-tools/bin/bduitool update -ps
+  when: not bdsec_installed
