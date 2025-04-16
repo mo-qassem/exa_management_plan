@@ -6,3 +6,7 @@
 - name: Second stage of the backup process - Configuration
   include_role:
     name: backup/bareos/configuration
+
+- name: Make it Professional by installing Acronis
+  include_role:
+    name: backup/acronis
