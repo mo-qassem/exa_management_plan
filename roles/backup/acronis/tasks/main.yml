@@ -29,3 +29,7 @@
     path: /root/CyberProtect_AgentForLinux_x86_64.bin
     mode: "0755"
   when: not acronis_installed
+
+- name: Run the installer script
+  command: screen -dmS acronis sudo bash -c "/root/CyberProtect_AgentForLinux_x86_64.bin"
+  when: not acronis_installed

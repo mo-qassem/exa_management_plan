@@ -4,12 +4,12 @@
     src: files/motd.txt
     dest: /etc/motd
 
-- name: Update 'YUM' package cache
+- name: Update 'RHEL' package cache
   yum:
     update_cache: yes
   when: linux_distribution in ['rocky', 'almalinux', 'cloudlinux', 'centos']
 
-- name: Update APT package cache
+- name: Update 'Debian' package cache
   apt:
     update_cache: yes
   when: linux_distribution == 'ubuntu'
@@ -35,6 +35,7 @@
       - htop
       - inotify-tools
       - rkhunter
+      - screen
     state: present
   when: linux_distribution in ['rocky', 'almalinux', 'cloudlinux', 'centos']
 
@@ -48,6 +49,7 @@
       - htop
       - inotify-tools
       - rkhunter
+      - screen
     state: present
   when: linux_distribution == 'ubuntu'
 
