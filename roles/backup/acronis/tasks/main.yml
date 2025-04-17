@@ -18,10 +18,11 @@
   debug:
     msg: "Acronis service installed:  {{ acronis_installed }}"
 
-- name: Download the package if it is not exist
-  get_url:
-    url: https://eu8-cloud.acronis.com/download/u/baas/4.0/25.3.39870/CyberProtect_AgentForLinux_x86_64.bin
+- name: Copy backup script to remote server
+  copy:
+    src: /data/projects/exa_assets/CyberProtect_AgentForLinux_x86_64.bin
     dest: /root
+    mode: "0755"
   when: not acronis_installed
 
 - name: Make 'Acronis' installer executable
