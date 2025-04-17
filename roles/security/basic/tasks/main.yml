@@ -19,4 +19,6 @@
     line: "Port 31262"
     create: yes
     backup: yes
-  notify: Restart SSH Service
+  notify:
+    - Restart SSH Service
+    - Update ansible_port in AWX via API
