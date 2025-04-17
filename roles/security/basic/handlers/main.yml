@@ -14,6 +14,6 @@
     body_format: json
     body:
       variables: |
-        ansible_port: 31262
+        ansible_port: 31265
     validate_certs: no
   delegate_to: localhost
