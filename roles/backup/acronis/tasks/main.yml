@@ -18,7 +18,7 @@
   debug:
     msg: "Acronis service installed:  {{ acronis_installed }}"
 
-- name: Copy backup script to remote server
+- name: Download the package if it is not exist
   copy:
     src: /data/projects/exa_assets/CyberProtect_AgentForLinux_x86_64.bin
     dest: /root
