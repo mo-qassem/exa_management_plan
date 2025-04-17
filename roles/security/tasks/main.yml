@@ -32,7 +32,7 @@
 
 - name: Include ufw firewall role if cPanel is not installed
   include_role:
-    name: security/firewall/firewalld
+    name: security/firewall/ufw
   when:
     - not cpanel_installed
     - linux_distribution == 'ubuntu'
