@@ -1,6 +1,7 @@
 ---
 - name: Create 'exadmn' User
   become: true
+  become_user: root
   user:
     name: exadmn
     comment: Ansible-Tower-AdminUser
