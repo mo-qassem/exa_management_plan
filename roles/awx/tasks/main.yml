@@ -3,7 +3,7 @@
     url: "https://awx.exahost.com/api/v2/hosts/?name={{ inventory_hostname }}"
     method: GET
     headers:
-      Authorization: "Bearer {{ exa_mgmt.api_token }}"
+      Authorization: "Bearer {{ credential.api_token }}"
     validate_certs: false
   register: awx_host_lookup
 
@@ -16,7 +16,7 @@
     url: "https://awx.exahost.com/api/v2/hosts/{{ awx_host_id }}/"
     method: GET
     headers:
-      Authorization: "Bearer {{ exa_mgmt.api_token }}"
+      Authorization: "Bearer {{ credential.api_token }}"
     validate_certs: false
   register: awx_host_data
 
@@ -32,7 +32,7 @@
     url: "https://awx.exahost.com/api/v2/hosts/{{ awx_host_id }}/"
     method: PATCH
     headers:
-      Authorization: "Bearer {{ exa_mgmt.api_token }}"
+      Authorization: "Bearer {{ credential.api_token }}"
       Content-Type: "application/json"
     validate_certs: false
     body_format: json
