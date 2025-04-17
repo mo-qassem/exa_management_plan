@@ -30,7 +30,7 @@
     - not cpanel_installed
     - linux_distribution in ['rocky', 'almalinux', 'cloudlinux', 'centos']
 
-- name: Include ufw firewall role if cPanel is not installed
+- name: Include ufw role if cPanel is not installed
   include_role:
     name: security/firewall/ufw
   when:
