@@ -14,7 +14,7 @@
 
     - name: Detect SSH Port
       wait_for:
-        port: 31262
+        port: 22
         host: "{{ inventory_hostname }}"
         timeout: 5
       register: port_check
