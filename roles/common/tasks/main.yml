@@ -7,7 +7,7 @@
 - name: Import Percona GPG key
   rpm_key:
     state: present
-    key: https://www.percona.com/downloads/RPM-GPG-KEY-Percona
+    key: https://downloads.percona.com/downloads/RPM-GPG-KEY-percona
   when: linux_distribution in ['rocky', 'almalinux', 'cloudlinux', 'centos']
 
 - name: Install Percona release 'RHEL' repository package
