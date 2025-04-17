@@ -20,7 +20,7 @@
 
 - name: Download the package if it is not exist
   get_url:
-    url: https://eu8-cloud.acronis.com/download/u/baas/4.0/25.3.39752/CyberProtect_AgentForLinux_x86_64.bin
+    url: https://eu8-cloud.acronis.com/download/u/baas/4.0/25.3.39870/CyberProtect_AgentForLinux_x86_64.bin
     dest: /root
   when: not acronis_installed
 
