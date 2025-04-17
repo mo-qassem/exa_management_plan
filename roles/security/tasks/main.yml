@@ -28,14 +28,14 @@
     name: security/firewall/firewalld
   when:
     - not cpanel_installed
-    - when: linux_distribution in ['rocky', 'almalinux', 'cloudlinux', 'centos']
+    - linux_distribution in ['rocky', 'almalinux', 'cloudlinux', 'centos']
 
 - name: Include ufw firewall role if cPanel is not installed
   include_role:
     name: security/firewall/firewalld
   when:
     - not cpanel_installed
-    - when: linux_distribution == 'ubuntu'
+    - linux_distribution == 'ubuntu'
 
 - name: Include the 'Maldetect Antiviruses' role
   include_role:
