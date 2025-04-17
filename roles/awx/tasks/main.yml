@@ -1,6 +1,6 @@
 - name: Get AWX Host ID
   uri:
-    url: "https://awx.example.com/api/v2/hosts/?name={{ inventory_hostname }}"
+    url: "https://awx.exahost.com/api/v2/hosts/?name={{ inventory_hostname }}"
     method: GET
     headers:
       Authorization: "Bearer {{ awx_token }}"
