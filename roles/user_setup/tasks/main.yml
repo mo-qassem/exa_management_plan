@@ -1,5 +1,6 @@
 ---
 - name: Create 'exadmn' User
+  become: true
   user:
     name: exadmn
     comment: Ansible-Tower-AdminUser
@@ -7,6 +8,7 @@
     shell: /bin/bash
 
 - name: Setup .ssh for exadmn
+  become: true
   file:
     path: "/home/exadmn/.ssh"
     state: directory
@@ -15,12 +17,14 @@
     group: exadmn
 
 - name: Add Public Key
+  become: true
   authorized_key:
     user: exadmn
     key: "{{ lookup('file', 'files/public_key.pub') }}"
     state: present
 
 - name: Add sudo permissions
+  become: true
   lineinfile:
     path: /etc/sudoers
     insertafter: "^## Allow root to run any commands anywhere"
