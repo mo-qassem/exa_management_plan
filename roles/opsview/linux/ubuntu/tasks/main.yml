@@ -15,7 +15,7 @@
 - name: Download the package if it is not exist
   get_url:
     url: https://box119.exaservers.com/exa_ansible/opsview-agent-debian.deb
-    dest: /tmp/opsview-agent-rhel.rpm
+    dest: /tmp/opsview-agent-debian.deb
   when: not file_exist.stat.exists
 
 - name: Gather package facts
