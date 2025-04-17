@@ -72,6 +72,13 @@
     group: opsview
     mode: "0750"
 
+- name: Copy the 'check_Raid' file
+  copy:
+    src: files/opsview/check_raid.pl
+    dest: /opt/opsview/agent/plugins
+    group: opsview
+    mode: "0750"
+
 - name: Start 'Opsview' Agent
   service:
     name: opsview-agent

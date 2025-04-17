@@ -1,0 +1,86 @@
+---
+- name: Ensure the Ansible tmp directory exists with correct permissions
+  file:
+    path: "/home/exadmn/.ansible/tmp"
+    state: directory
+    mode: "0755"
+    owner: exadmn
+    group: exadmn
+
+- name: Check If 'Opsview' already downloaded or not
+  stat:
+    path: /tmp/opsview-agent-debian.deb
+  register: file_exist
+
+- name: Download the package if it is not exist
+  get_url:
+    url: https://box119.exaservers.com/exa_ansible/opsview-agent-debian.deb
+    dest: /tmp/opsview-agent-rhel.rpm
+  when: not file_exist.stat.exists
+
+- name: Gather package facts
+  package_facts:
+
+- name: Check if opsview-agent is installed
+  set_fact:
+    opsview_installed: "{{ ansible_facts.packages['opsview-agent'] is defined }}"
+
+- name: Print the result
+  debug:
+    msg: "Opsview agent installed:  {{ opsview_installed }}"
+
+- name: Install 'Opsview' RPM package if not installed
+  command: sudo dpkg -i /tmp/opsview-agent-debian.deb
+  args:
+    creates: /opt/opsview/agent
+  when: not opsview_installed
+
+- name: Add special permissions to 'Sudoers' file
+  blockinfile:
+    path: /etc/sudoers
+    insertafter: "^## Allows members of the users group to shutdown this system"
+    block: |
+      opsview ALL=NOPASSWD:/usr/sbin/exim
+      opsview ALL=NOPASSWD:/usr/sbin/lfd
+      opsview ALL=NOPASSWD:/usr/bin/omreport
+      opsview ALL=NOPASSWD:/opt/opsview/agent/plugins/check_tcp
+      opsview ALL=NOPASSWD:/opt/opsview/agent/plugins/check_disk
+      opsview ALL=NOPASSWD:/opt/opsview/agent/plugins/check_csf
+    create: yes
+
+- name: Copy the 'NRPE' configuration file
+  template:
+    src: files/opsview/nrpe.cfg.j2
+    dest: /opt/opsview/agent/etc/nrpe.cfg
+
+- name: Copy the 'check_bandwidth_quota' file
+  template:
+    src: files/opsview/check_bandwidth_quota.sh.j2
+    dest: /opt/opsview/agent/plugins/check_bandwidth_quota.sh
+
+- name: Copy the 'check_csf' file
+  copy:
+    src: files/opsview/check_csf
+    dest: /opt/opsview/agent/plugins
+    group: opsview
+    mode: "0750"
+
+- name: Copy the 'check_eximmailqueue' file
+  copy:
+    src: files/opsview/check_eximmailqueue
+    dest: /opt/opsview/agent/plugins
+    group: opsview
+    mode: "0750"
+
+- name: Copy the 'check_Raid' file
+  copy:
+    src: files/opsview/check_raid.pl
+    dest: /opt/opsview/agent/plugins
+    group: opsview
+    mode: "0750"
+
+- name: Start 'Opsview' Agent
+  service:
+    name: opsview-agent
+    state: started
+    enabled: yes

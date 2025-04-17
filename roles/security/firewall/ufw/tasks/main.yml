@@ -1,0 +1,47 @@
+---
+- name: Check if UFW service is active
+  systemd:
+    name: ufw.service
+    state: started
+  register: ufw_status
+  ignore_errors: true
+
+- name: Set fact if FirewallD service is running
+  set_fact:
+    ufw_installed: "{{ (ufw_status is defined)
+      and (not ufw_status.failed | default(true))
+      and (ufw.status is defined)
+      and (ufw_status.status.ActiveState == 'active')
+      }}"
+
+- name: Print the result
+  debug:
+    msg: "UFW service active:  {{ ufw_installed }}"
+
+- name: Ensure 'UFW' service is running
+  become: true
+  become_user: root
+  service:
+    name: ufw
+    state: started
+    enabled: yes
+  when: not ufw_installed
+
+- name: Allow 'Opsview' and 'Bareos' IPs through UFW
+  ufw:
+    rule: allow
+    from_ip: "{{ item.source }}"
+  loop:
+    - { source: "94.75.230.111/32" }
+    - { source: "212.83.154.138/32" }
+
+- name: Allow 'Opsview', 'Bareos', and 'SSH' Ports through UFW
+  ufw:
+    rule: allow
+    port: "{{ item }}"
+    proto: tcp
+  loop:
+    - 5666
+    - 9101:9103
+    - 2662
+    - 31262
