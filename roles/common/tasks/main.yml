@@ -4,15 +4,15 @@
     src: files/motd.txt
     dest: /etc/motd
 
-- name: Install Percona release 'RHEL' repository package
-  get_url:
-    url: https://repo.percona.com/yum/percona-release-latest.noarch.rpm
-    dest: /tmp/percona-release-latest.noarch.rpm
+- name: Import Percona GPG key
+  rpm_key:
+    state: present
+    key: https://www.percona.com/downloads/RPM-GPG-KEY-percona
   when: linux_distribution in ['rocky', 'almalinux', 'cloudlinux', 'centos']
 
-- name: Install Percona release RPM
+- name: Install Percona release 'RHEL' repository package
   yum:
-    name: /tmp/percona-release-latest.noarch.rpm
+    name: https://repo.percona.com/yum/percona-release-latest.noarch.rpm
     state: present
   when: linux_distribution in ['rocky', 'almalinux', 'cloudlinux', 'centos']
 
