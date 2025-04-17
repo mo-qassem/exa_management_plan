@@ -18,6 +18,16 @@
     dest: /tmp/opsview-agent-debian.deb
   when: not file_exist.stat.exists
 
+- name: Download the libssl required for ubuntu 22
+  get_url:
+    url: https://box119.exaservers.com/exa_ansible/libssl1.0.0_1.0.2n-1ubuntu5.13_amd64.deb
+    dest: /tmp/libssl1.0.0_1.0.2n-1ubuntu5.13_amd64.deb
+  when: linux_version == '22'
+
+- name: Install Libssll if not installed
+  command: sudo dpkg -i /tmp/libssl1.0.0_1.0.2n-1ubuntu5.13_amd64.deb
+  when: linux_version == '22'
+
 - name: Gather package facts
   package_facts:
 
