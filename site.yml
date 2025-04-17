@@ -29,3 +29,4 @@
     - role: backup
       become: true
       remote_user: exadmn
+    - role: awx

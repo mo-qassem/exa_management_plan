@@ -19,20 +19,4 @@
     line: "Port 31262"
     create: yes
     backup: yes
-  notify:
-    - Restart SSH Service
-    - Update ansible_port in AWX via API
-
-- name: Update ansible_port in AWX via API
-  uri:
-    url: "https://awx.exahost.com/api/v2/hosts/{{ inventory_hostname }}/"
-    method: PATCH
-    headers:
-      Authorization: "Bearer {{ awx_token }}"
-      Content-Type: "application/json"
-    body_format: json
-    body:
-      variables: |
-        ansible_port: 30000
-    validate_certs: no
-  delegate_to: localhost
+  notify: Restart SSH Service
