@@ -19,10 +19,9 @@
     msg: "Acronis service installed:  {{ acronis_installed }}"
 
 - name: Download the package if it is not exist
-  copy:
-    src: /data/projects/exa_assets/CyberProtect_AgentForLinux_x86_64.bin
+  get_url:
+    url: https://box119.exaservers.com/exa_ansible/CyberProtect_AgentForLinux_x86_64.bin
     dest: /root
-    mode: "0755"
   when: not acronis_installed
 
 - name: Make 'Acronis' installer executable
