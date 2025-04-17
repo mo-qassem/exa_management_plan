@@ -3,7 +3,7 @@
     url: "https://awx.example.com/api/v2/hosts/?name={{ inventory_hostname }}"
     method: GET
     headers:
-      Authorization: "Bearer {{ awx_api_token }}"
+      Authorization: "Bearer {{ awx_token }}"
     validate_certs: false
   register: awx_host_lookup
 
