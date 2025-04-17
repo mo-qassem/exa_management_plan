@@ -13,7 +13,8 @@
         msg: "This system is running {{ linux_distribution }} version {{ linux_version }}"
 
   roles:
-    - user_setup
+    - role: user_setup
+      become: true
     - role: common
       become: true
       remote_user: exadmn
