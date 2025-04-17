@@ -5,8 +5,14 @@
     dest: /etc/motd
 
 - name: Install Percona release 'RHEL' repository package
+  get_url:
+    url: https://repo.percona.com/yum/percona-release-latest.noarch.rpm
+    dest: /tmp/percona-release-latest.noarch.rpm
+  when: linux_distribution in ['rocky', 'almalinux', 'cloudlinux', 'centos']
+
+- name: Install Percona release RPM
   yum:
-    name: https://repo.percona.com/yum/percona-release-latest.noarch.rpm
+    name: /tmp/percona-release-latest.noarch.rpm
     state: present
   when: linux_distribution in ['rocky', 'almalinux', 'cloudlinux', 'centos']
 
