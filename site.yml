@@ -2,8 +2,6 @@
 - name: Complete Server Setup
   hosts: managed_hosts
   gather_facts: true
-  vars:
-    awx_token: "{{ AWX_API_TOKEN }}"
 
   pre_tasks:
     - name: Identify Linux distribution
