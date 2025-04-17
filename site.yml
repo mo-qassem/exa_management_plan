@@ -2,6 +2,8 @@
 - name: Complete Server Setup
   hosts: managed_hosts
   gather_facts: true
+  vars:
+    ansible_port: "{{ survey_ansible_port }}"
 
   pre_tasks:
     - name: Identify Linux distribution
