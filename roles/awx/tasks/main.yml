@@ -1,6 +1,19 @@
+- name: Get AWX Host ID
+  uri:
+    url: "https://awx.example.com/api/v2/hosts/?name={{ inventory_hostname }}"
+    method: GET
+    headers:
+      Authorization: "Bearer {{ awx_api_token }}"
+    validate_certs: false
+  register: awx_host_lookup
+
+- name: Retrive the host id
+  set_fact:
+    awx_host_id: "{{ awx_host_lookup.json.results[0].id }}"
+
 - name: Update ansible_port in AWX via API
   uri:
-    url: "https://awx.exahost.com/api/v2/hosts/{{ inventory_hostname }}/"
+    url: "https://awx.exahost.com/api/v2/hosts/{{ awx_host_id }}/"
     method: PATCH
     headers:
       Authorization: "Bearer {{ awx_token }}"
