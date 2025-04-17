@@ -5,8 +5,6 @@
     state: restarted
 
 - name: Update ansible_port in AWX via API
-  become: true
-  become_user: root
   uri:
     url: "https://awx.exahost.com/api/v2/hosts/{{ inventory_hostname }}/"
     method: PATCH
