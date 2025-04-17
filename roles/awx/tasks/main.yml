@@ -11,16 +11,31 @@
   set_fact:
     awx_host_id: "{{ awx_host_lookup.json.results[0].id }}"
 
-- name: Update ansible_port in AWX via API
+- name: Get current host variables from AWX
+  uri:
+    url: "https://awx.exahost.com/api/v2/hosts/{{ awx_host_id }}/"
+    method: GET
+    headers:
+      Authorization: "Bearer {{ awx_token }}"
+    validate_certs: false
+  register: awx_host_data
+
+- name: Merge new ansible_port into existing host variables
+  set_fact:
+    updated_host_vars: >-
+      {{
+        awx_host_data.json.variables | from_yaml | combine({'ansible_port': 40000}, recursive=True)
+      }}
+
+- name: Update host variables back to AWX
   uri:
     url: "https://awx.exahost.com/api/v2/hosts/{{ awx_host_id }}/"
     method: PATCH
     headers:
       Authorization: "Bearer {{ awx_token }}"
       Content-Type: "application/json"
+    validate_certs: false
     body_format: json
     body:
-      variables: |
-        ansible_port: 30000
-    validate_certs: no
+      variables: "{{ updated_host_vars | to_nice_yaml }}"
   delegate_to: localhost
