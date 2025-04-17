@@ -26,18 +26,27 @@
 - name: Include iptables firewall role if cPanel is not installed
   include_role:
     name: security/firewall/firewalld
-  when: not cpanel_installed
+  when:
+    - not cpanel_installed
+    - when: linux_distribution in ['rocky', 'almalinux', 'cloudlinux', 'centos']
 
-- name: Include the 'antiviruses' role
+- name: Include ufw firewall role if cPanel is not installed
+  include_role:
+    name: security/firewall/firewalld
+  when:
+    - not cpanel_installed
+    - when: linux_distribution == 'ubuntu'
+
+- name: Include the 'Maldetect Antiviruses' role
   include_role:
     name: security/antiviruses/maldetect
   when: not prof_mgmt | bool
 
-- name: Include the 'antiviruses' role
+- name: Include the 'BitDefender Antiviruses' role
   include_role:
     name: security/antiviruses/bitdefender
   when: prof_mgmt | bool
 
-- name: Include the 'common' role
+- name: Include the 'Basic' role
   include_role:
-    name: security/common
+    name: security/basic
