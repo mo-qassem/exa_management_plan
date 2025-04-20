@@ -101,17 +101,9 @@
     daemon_reload: yes
   when: linux_version == '9'
 
-- name: Kill any existing NRPE process
-  shell: |
-    pids=$(pgrep -f nrpe)
-    if [ -n "$pids" ]; then
-      kill $pids
-    fi
-  register: kill_result
-  ignore_errors: true
-
 - name: Start 'Opsview' Agent
   service:
     name: opsview-agent
     state: started
     enabled: yes
+  when: not linux_version == '9'
