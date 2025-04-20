@@ -21,6 +21,15 @@
     state: present
   when: linux_distribution in ['rocky', 'almalinux', 'cloudlinux', 'centos']
 
+- name: Install 'compat-openssl11' prerequisite for opsview-agent package on RHEL based Linux 9 and above
+  yum:
+    name:
+      - compat-openssl11
+    state: present
+  when:
+    - linux_distribution in ['rocky', 'almalinux', 'cloudlinux', 'centos']
+    - linux_version == '9'
+
 - name: Install 'Useful' tools
   yum:
     name:
