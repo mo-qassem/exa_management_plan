@@ -106,3 +106,4 @@
     name: opsview-agent
     state: started
     enabled: yes
+  when: not linux_version == '9'
