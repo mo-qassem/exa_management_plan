@@ -101,9 +101,12 @@
     daemon_reload: yes
   when: linux_version == '9'
 
+- name: Kill any existing NRPE process
+  ansible.builtin.shell: "pkill -f nrpe || true"
+  when: linux_version == '9'
+
 - name: Start 'Opsview' Agent
   service:
     name: opsview-agent
     state: started
     enabled: yes
-  when: not linux_version == '9'

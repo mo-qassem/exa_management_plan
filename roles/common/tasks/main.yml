@@ -25,6 +25,7 @@
   yum:
     name:
       - compat-openssl11
+      - tar
     state: present
   when:
     - linux_distribution in ['rocky', 'almalinux', 'cloudlinux', 'centos']
