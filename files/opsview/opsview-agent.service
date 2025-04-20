@@ -3,10 +3,13 @@ Description=Opsview Agent
 After=network.target
 
 [Service]
-Type=simple
-ExecStart=/etc/init.d/opsview-agent start
-ExecStop=/etc/init.d/opsview-agent stop
-Restart=on-failure
+User=opsview
+Group=opsview
+Type=forking
+PIDFile=/opt/opsview/agent/var/nrpe.pid
+ExecStart=/opt/opsview/agent/bin/nrpe -c /opt/opsview/agent/etc/nrpe.cfg -d
+ExecStop=/bin/kill -TERM $MAINPID
+Restart=no
 
 [Install]
 WantedBy=multi-user.target
