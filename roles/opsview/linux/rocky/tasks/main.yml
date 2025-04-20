@@ -102,8 +102,13 @@
   when: linux_version == '9'
 
 - name: Kill any existing NRPE process
-  ansible.builtin.shell: "pkill -f nrpe || true"
-  when: linux_version == '9'
+  shell: |
+    pids=$(pgrep -f nrpe)
+    if [ -n "$pids" ]; then
+      kill $pids
+    fi
+  register: kill_result
+  ignore_errors: true
 
 - name: Start 'Opsview' Agent
   service:
