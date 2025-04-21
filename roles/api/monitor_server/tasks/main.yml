@@ -69,7 +69,7 @@
   uri:
     url: >-
       {{
-        'http://opsview.nileweb.com:3000/rest/config/host/' + {{ inventory_hostname }}
+        'http://opsview.nileweb.com:3000/rest/config/host/' + inventory_hostname
         if opsview_api_method == 'PUT'
         else 'http://opsview.nileweb.com:3000/rest/config/host'
       }}
