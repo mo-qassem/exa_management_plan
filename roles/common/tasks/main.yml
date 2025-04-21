@@ -4,6 +4,13 @@
     src: files/motd.txt
     dest: /etc/motd
 
+- name: Install 'epel-release' prerequisite for vnstat package
+  yum:
+    name:
+      - epel-release
+    state: present
+  when: linux_distribution in ['rocky', 'almalinux', 'cloudlinux', 'centos']
+
 - name: Update 'RHEL' package cache
   yum:
     update_cache: yes
@@ -13,13 +20,6 @@
   apt:
     update_cache: yes
   when: linux_distribution == 'ubuntu'
-
-- name: Install 'epel-release' prerequisite for vnstat package
-  yum:
-    name:
-      - epel-release
-    state: present
-  when: linux_distribution in ['rocky', 'almalinux', 'cloudlinux', 'centos']
 
 - name: Install 'compat-openssl11' prerequisite for opsview-agent package on RHEL based Linux 9 and above
   yum:
