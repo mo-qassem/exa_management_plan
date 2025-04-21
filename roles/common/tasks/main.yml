@@ -26,6 +26,7 @@
     name:
       - compat-openssl11
       - tar
+      - ed
     state: present
   when:
     - linux_distribution in ['rocky', 'almalinux', 'cloudlinux', 'centos']
