@@ -1,0 +1,71 @@
+---
+- name: Check if host already exists in Opsview
+  uri:
+    url: "http://opsview.nileweb.com:3000/rest/config/host/{{ ansible_host }}"
+    method: GET
+    headers:
+      X-Opsview-Username: "{{ opsview_user }}"
+      X-Opsview-Token: "{{ opsview_token }}"
+      Content-Type: "application/json"
+    return_content: yes
+    status_code: [200, 404]
+    validate_certs: no
+  register: opsview_host_check
+
+- name: Set method and payload for Opsview host
+  set_fact:
+    opsview_api_method: "{{ 'PUT' if opsview_host_check.status == 200 else 'POST' }}"
+    opsview_api_payload: >-
+      {{
+        {
+          'name': inventory_hostname,
+          'alias': inventory_hostname,
+          'address': ansible_ip,
+          'hostgroup': { 'name': 'AWX' },
+          'hosttemplates': [{ 'name': 'Shared Hosting - BOXS' }],
+          'icon': { 'name': 'LOGO - Linux Penguin' },
+          'monitored_by': { 'name': 'Master Monitoring Server' },
+          'other_addresses': ''
+        }
+      }}
+  when: cpanel_installed
+
+- name: Set method and payload for Opsview host
+  set_fact:
+    opsview_api_method: "{{ 'PUT' if opsview_host_check.status == 200 else 'POST' }}"
+    opsview_api_payload: >-
+      {{
+        {
+          'name': inventory_hostname,
+          'alias': inventory_hostname,
+          'address': ansible_ip,
+          'hostgroup': { 'name': 'AWX' },
+          'hosttemplates': [{ 'name': 'VPS-Managed' }],
+          'icon': { 'name': 'LOGO - Linux Penguin' },
+          'monitored_by': { 'name': 'Master Monitoring Server' },
+          'other_addresses': ''
+        }
+      }}
+    when: not cpanel_installed
+
+- name: Create or Update host in Opsview
+  uri:
+    url: >-
+      {{
+        'http://opsview.nileweb.com:3000/rest/config/host/' + ansible_host
+        if opsview_api_method == 'PUT'
+        else 'http://opsview.nileweb.com:3000/rest/config/host'
+      }}
+    method: "{{ opsview_api_method }}"
+    headers:
+      X-Opsview-Username: "{{ opsview_user }}"
+      X-Opsview-Token: "{{ opsview_token }}"
+      Content-Type: "application/json"
+    body_format: json
+    body: "{{ opsview_api_payload }}"
+    validate_certs: no
+  register: opsview_host_result
+
+- name: Debug API result
+  debug:
+    var: opsview_host_result.json

@@ -1,0 +1,8 @@
+---
+- name: Update host vars in awx inventory
+  include_role:
+    name: api/awx
+
+- name: Register the server in opsview-server
+  include_role:
+    name: api/monitor_server
