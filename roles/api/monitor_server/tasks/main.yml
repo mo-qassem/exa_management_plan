@@ -37,7 +37,7 @@
         {
           'name': inventory_hostname,
           'alias': inventory_hostname,
-          'address': ansible_ip,
+          'address': ansible_host,
           'hostgroup': { 'name': 'AWX' },
           'hosttemplates': [{ 'name': 'Shared Hosting - BOXS' }],
           'icon': { 'name': 'LOGO - Linux Penguin' },
@@ -55,7 +55,7 @@
         {
           'name': inventory_hostname,
           'alias': inventory_hostname,
-          'address': ansible_ip,
+          'address': ansible_host,
           'hostgroup': { 'name': 'AWX' },
           'hosttemplates': [{ 'name': 'VPS-Managed' }],
           'icon': { 'name': 'LOGO - Linux Penguin' },
