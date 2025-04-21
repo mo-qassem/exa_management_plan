@@ -57,7 +57,7 @@
       hostgroup:
         name: "AWX"
       hosttemplates:
-        - name: "Shared Hosting - BOXS"
+        - name: "VPS-Managed"
       icon:
         name: "LOGO - Linux Penguin"
       monitored_by:
