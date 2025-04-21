@@ -1,11 +1,31 @@
 ---
+- name: Get Opsview API Token
+  uri:
+    url: "{{ opsview_url }}/rest/login"
+    method: POST
+    headers:
+      Content-Type: "application/json"
+    body_format: json
+    body:
+      username: "{{ opsview_username }}"
+      password: "{{ opsview_password }}"
+    validate_certs: false
+  register: opsview_login
+
+- name: Check if opsview-agent is installed
+  set_fact: opsview_login_token:"{{ opsview_login.json.token }}"
+
+- name: Print the result
+  debug:
+    msg: "Token is:  {{ opsview_login_token }}"
+
 - name: Check if host already exists in Opsview
   uri:
-    url: "http://opsview.nileweb.com:3000/rest/config/host/{{ ansible_host }}"
+    url: "{{ opsview_url }}/rest/config/host/{{ ansible_host }}"
     method: GET
     headers:
-      X-Opsview-Username: "{{ opsview_user }}"
-      X-Opsview-Token: "{{ opsview_token }}"
+      X-Opsview-Username: "{{ opsview_username }}"
+      X-Opsview-Token: "{{ opsview_login_token }}"
       Content-Type: "application/json"
     return_content: yes
     status_code: [200, 404]
@@ -58,8 +78,8 @@
       }}
     method: "{{ opsview_api_method }}"
     headers:
-      X-Opsview-Username: "{{ opsview_user }}"
-      X-Opsview-Token: "{{ opsview_token }}"
+      X-Opsview-Username: "{{ opsview_username }}"
+      X-Opsview-Token: "{{ opsview_login_token }}"
       Content-Type: "application/json"
     body_format: json
     body: "{{ opsview_api_payload }}"
