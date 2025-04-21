@@ -89,7 +89,7 @@
 - name: Set calculated cron days
   set_fact:
     before_backup: "{{ (backup_date | int) - 1 }}"
-    after_backup: "{{ (backup_date | int) + 5 }}"
+    after_backup: "{{ '5' if (backup_date | int) == 28 else (backup_date | int) + 5 }}"
   when: cpanel_installed
 
 - name: Create backup cron job (before backup_date)
