@@ -62,14 +62,14 @@
         name: "LOGO - Linux Penguin"
       monitored_by:
         name: "Master Monitoring Server"
-      other_addresses: ""
+      other_addresses: "{{ ansible_host }}"
     when: not cpanel_installed
 
 - name: Create or Update host in Opsview
   uri:
     url: >-
       {{
-        'http://opsview.nileweb.com:3000/rest/config/host/' + {{ ansible_host }}
+        'http://opsview.nileweb.com:3000/rest/config/host/' + {{ inventory_hostname }}
         if opsview_api_method == 'PUT'
         else 'http://opsview.nileweb.com:3000/rest/config/host'
       }}
