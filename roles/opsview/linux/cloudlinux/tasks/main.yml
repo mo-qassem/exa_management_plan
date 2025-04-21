@@ -29,6 +29,14 @@
   debug:
     msg: "Opsview agent installed:  {{ opsview_installed }}"
 
+- name: Ensure opsview user exists
+  user:
+    name: opsview
+    home: /opt/opsview
+    create_home: yes
+    system: yes
+  when: linux_version == '9'
+
 - name: Install 'Opsview' RPM package if not installed
   command: sudo rpm -i /tmp/opsview-agent-rhel.rpm
   args:
@@ -79,22 +87,9 @@
     group: opsview
     mode: "0750"
 
-- name: Create systemd unit file for Opsview Agent
-  copy:
-    src: files/opsview/opsview-agent.service
-    dest: /etc/systemd/system/opsview-agent.service
-    owner: root
-    group: root
-    mode: "0644"
-  when: linux_version == '9'
-
-- name: Reload systemd daemon
-  systemd:
-    daemon_reload: yes
-  when: linux_version == '9'
-
 - name: Start 'Opsview' Agent
   service:
     name: opsview-agent
     state: started
     enabled: yes
+  when: not linux_version == '9'
