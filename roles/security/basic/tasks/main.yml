@@ -1,4 +1,9 @@
 ---
+- name: Allow SSH on custom port 31262 via SELinux
+  become: true
+  command: semanage port -a -t ssh_port_t -p tcp 31262
+  when: linux_version == '9'
+
 - name: Ensure root login is enabled in SSH config
   become: true
   become_user: root

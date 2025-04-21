@@ -25,6 +25,7 @@
   yum:
     name:
       - compat-openssl11
+      - policycoreutils-python-utils
       - tar
       - ed
     state: present
