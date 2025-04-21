@@ -53,7 +53,7 @@
     opsview_api_payload:
       name: "{{ inventory_hostname }}"
       alias: "{{ inventory_hostname }}"
-      address: "{{ ansible_host }}"
+      address: "62.4.15.221"
       hostgroup:
         name: "AWX"
       hosttemplates:
@@ -62,7 +62,7 @@
         name: "LOGO - Linux Penguin"
       monitored_by:
         name: "Master Monitoring Server"
-      other_addresses: "{{ ansible_host }}"
+      other_addresses: ""
     when: not cpanel_installed
 
 - name: Create or Update host in Opsview
