@@ -35,7 +35,13 @@
     opsview_api_payload:
       name: "{{ inventory_hostname }}"
       alias: "{{ inventory_hostname }}"
-      address: "{{ ansible_host }}"
+      ip: "{{ ansible_host }}"
+      check_command: "check_host_15!-H $HOSTADDRESS$ -t 3 -w 500.0,80% -c 1000.0,100%"
+      check_period: "24x7"
+      notifications_enabled: true
+      notification_interval: "60"
+      notification_period: "24x7"
+      notification_options: "u,d,r,f"
       hostgroup:
         name: "AWX"
       hosttemplates:
@@ -53,7 +59,13 @@
     opsview_api_payload:
       name: "{{ inventory_hostname }}"
       alias: "{{ inventory_hostname }}"
-      address: "62.4.15.221"
+      ip: "{{ ansible_host }}"
+      check_command: "check_host_15!-H $HOSTADDRESS$ -t 3 -w 500.0,80% -c 1000.0,100%"
+      check_period: "24x7"
+      notifications_enabled: true
+      notification_interval: "60"
+      notification_period: "24x7"
+      notification_options: "u,d,r,f"
       hostgroup:
         name: "AWX"
       hosttemplates:
