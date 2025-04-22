@@ -69,6 +69,7 @@
 - name: Add monitoring and backup servers to CSF allow list
   command: sudo csf -a {{ item.ip }} {{ item.comment }}
   loop:
+    - { ip: "85.17.194.5", comment: "exa-vpn" }
     - { ip: "94.75.230.111", comment: "exa-opsview-server" }
     - { ip: "212.83.154.138", comment: "exa-bareos-server" }
 
