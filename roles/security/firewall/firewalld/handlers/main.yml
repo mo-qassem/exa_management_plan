@@ -4,5 +4,5 @@
   become_user: root
   service:
     name: firewalld
-    state: reloaded
+    state: restarted
     enabled: yes
