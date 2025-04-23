@@ -33,8 +33,8 @@
   set_fact:
     opsview_host_id: >-
       {{
-        (opsview_host_check.json.list | selectattr('name', 'equalto', inventory_hostname) | list | first).id
-        if (opsview_host_check.json.list | selectattr('name', 'equalto', inventory_hostname) | list | length) > 0
+        (opsview_host_check.json.list | default([]) | selectattr('name', 'equalto', inventory_hostname) | list | first).id
+        if (opsview_host_check.json.list | default([]) | selectattr('name', 'equalto', inventory_hostname) | list | length) > 0
         else omit
       }}
 
