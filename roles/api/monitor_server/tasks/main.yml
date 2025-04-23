@@ -1,14 +1,14 @@
 ---
 - name: Get Opsview API Token
   uri:
-    url: "{{ OPSVIEW_URL }}/rest/login"
+    url: "{{ lookup('env', 'OPSVIEW_URL') }}/rest/login"
     method: POST
     headers:
       Content-Type: "application/json"
     body_format: json
     body:
-      username: "{{ OPSVIEW_USERNAME }}"
-      password: "{{ OPSVIEW_PASSWORD }}"
+      username: "{{ lookup('env', 'OPSVIEW_USERNAME') }}"
+      password: "{{ lookup('env', 'OPSVIEW_PASSWORD') }}"
     validate_certs: false
   register: opsview_login
 
@@ -18,10 +18,10 @@
 
 - name: Check if host already exists in Opsview
   uri:
-    url: "{{ OPSVIEW_URL }}/rest/config/host/{{ ansible_host }}"
+    url: "{{ lookup('env', 'OPSVIEW_URL') }}/rest/config/host/"
     method: GET
     headers:
-      X-Opsview-Username: "{{ OPSVIEW_USERNAME }}"
+      X-Opsview-Username: "{{ lookup('env', 'OPSVIEW_USERNAME') }}"
       X-Opsview-Token: "{{ opsview_login.json.token }}"
       Content-Type: "application/json"
     return_content: yes
@@ -29,78 +29,61 @@
     validate_certs: no
   register: opsview_host_check
 
-- name: Set method and payload for Opsview host
+- name: Get Opsview host ID if it exists
   set_fact:
-    opsview_api_method: "{{ 'PUT' if opsview_host_check.status == 200 else 'POST' }}"
-    opsview_api_payload:
-      name: "{{ inventory_hostname }}"
-      alias: "{{ inventory_hostname }}"
-      ip: "{{ ansible_host }}"
-      check_command: "check_host_15!-H $HOSTADDRESS$ -t 3 -w 500.0,80% -c 1000.0,100%"
-      check_period: "24x7"
-      notifications_enabled: true
-      notification_interval: "60"
-      notification_period: "24x7"
-      notification_options: "u,d,r,f"
-      hostgroup:
-        name: "AWX"
-      hosttemplates:
-        - name: "Shared Hosting - BOXS"
-      icon:
-        name: "LOGO - Linux Penguin"
-      monitored_by:
-        name: "Master Monitoring Server"
-      other_addresses: ""
-  when: cpanel_installed
+    opsview_host_id: >-
+      {{
+        (opsview_host_check.json.list | selectattr('name', 'equalto', inventory_hostname) | list | first).id
+        if (opsview_host_check.json.list | selectattr('name', 'equalto', inventory_hostname) | list | length) > 0
+        else omit
+      }}
 
 - name: Set method and payload for Opsview host
   set_fact:
-    opsview_api_method: "{{ 'PUT' if opsview_host_check.status == 200 else 'POST' }}"
-    opsview_api_payload:
-      name: "{{ inventory_hostname }}"
-      alias: "{{ inventory_hostname }}"
-      ip: "{{ ansible_host }}"
-      check_command:
-        name: "ping"
-      check_period:
-        name: "24x7"
-      notification_period:
-        name: "24x7"
-      notifications_enabled: true
-      notification_interval: "60"
-      notification_options:
-        name: "u,d,r,f"
-      hostgroup:
-        name: "AWX"
-      hosttemplates:
-        - name: "VPS-Managed"
-      icon:
-        name: "LOGO - Linux Penguin"
-      monitored_by:
-        name: "Master Monitoring Server"
-      other_addresses: ""
-    when: not cpanel_installed
+    opsview_api_method: "{{ 'PUT' if opsview_host_id is defined else 'POST' }}"
+    opsview_api_payload: >-
+      {{
+        {
+          "name": inventory_hostname,
+          "alias": inventory_hostname,
+          "ip": ansible_host,
+          "check_command": {"name": "ping"},
+          "check_period": {"name": "24x7"},
+          "notification_period": {"name": "24x7"},
+          "notifications_enabled": True,
+          "notification_interval": "60",
+          "notification_options": {"name": "u,d,r,f"},
+          "hostgroup": {"name": "AWX"},
+          "hosttemplates": [{"name": cpanel_installed | ternary('Shared Hosting - BOXS', 'VPS-Managed')}],
+          "icon": {"name": "LOGO - Linux Penguin"},
+          "monitored_by": {"name": "Master Monitoring Server"},
+          "other_addresses": ""
+        }
+      }}
 
 - name: Create or Update host in Opsview
   uri:
     url: >-
       {{
-        'http://opsview.nileweb.com:3000/rest/config/host/' + inventory_hostname
+        (lookup('env', 'OPSVIEW_URL') + '/rest/config/host/' + opsview_host_id)
         if opsview_api_method == 'PUT'
-        else 'http://opsview.nileweb.com:3000/rest/config/host'
+        else (lookup('env', 'OPSVIEW_URL') + '/rest/config/host')
       }}
     method: "{{ opsview_api_method }}"
     headers:
-      X-Opsview-Username: "{{ OPSVIEW_USERNAME }}"
+      X-Opsview-Username: "{{ lookup('env', 'OPSVIEW_USERNAME') }}"
       X-Opsview-Token: "{{ opsview_login.json.token }}"
       Content-Type: "application/json"
     body_format: json
     body: "{{ opsview_api_payload }}"
     validate_certs: no
-  register: opsview_host_result
 
 - name: Apply Opsview configuration (gen_config + restart)
   become: true
   ansible.builtin.shell: /usr/local/nagios/bin/rc.opsview gen_config
   run_once: true
   delegate_to: opsview_server
+  args:
+    warn: false
+  register: opsview_gen_config
+  failed_when: opsview_gen_config.rc != 0 and "'command not found'" not in opsview_gen_config.stderr
