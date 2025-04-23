@@ -41,8 +41,11 @@
 - name: Set Opsview host ID if host exists
   set_fact:
     opsview_host_id: "{{ item.id }}"
-  when: item.name == inventory_hostname
-  loop: "{{ opsview_host_check.json.list | default([]) }}"
+  when:
+    - opsview_host_check.json.list is defined
+    - opsview_host_check.json.list | length > 0
+    - item.name == inventory_hostname
+  loop: "{{ opsview_host_check.json.list }}"
 
 - name: Set method and payload for Opsview host
   set_fact:
