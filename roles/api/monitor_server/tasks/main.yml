@@ -29,13 +29,20 @@
     validate_certs: no
   register: opsview_host_check
 
-- name: Find matching Opsview host
+- name: Get Opsview host ID if it exists
   set_fact:
-    opsview_matching_host: >-
+    opsview_host_id: >-
       {{
-        (opsview_host_check.json.list | default([]) | selectattr('name', 'equalto', inventory_hostname) | list | first)
+        (opsview_host_check.json.list | selectattr('name', 'equalto', inventory_hostname) | list | first).id
+        if (opsview_host_check.json.list | selectattr('name', 'equalto', inventory_hostname) | list | length) > 0
+        else omit
       }}
-  when: (opsview_host_check.json.list | default([]) | selectattr('name', 'equalto', inventory_hostname) | list | length) > 0
+
+- name: Set Opsview host ID if host exists
+  set_fact:
+    opsview_host_id: "{{ item.id }}"
+  when: item.name == inventory_hostname
+  loop: "{{ opsview_host_check.json.list | default([]) }}"
 
 - name: Set method and payload for Opsview host
   set_fact:
