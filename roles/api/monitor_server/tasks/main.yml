@@ -51,7 +51,12 @@
           "notification_period": {"name": "24x7"},
           "notifications_enabled": True,
           "notification_interval": "60",
-          "notification_options": ["u", "d", "r", "f"],
+          "notification_options": {
+            "unreachable": True,
+            "down": True,
+            "recovery": True,
+            "flapping": True
+          },
           "hostgroup": {"name": "AWX"},
           "hosttemplates": [{"name": cpanel_installed | ternary('Shared Hosting - BOXS', 'VPS-Managed')}],
           "icon": {"name": "LOGO - Linux Penguin"},
