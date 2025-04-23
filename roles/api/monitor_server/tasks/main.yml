@@ -1,14 +1,14 @@
 ---
 - name: Get Opsview API Token
   uri:
-    url: "{{ opsview_url }}/rest/login"
+    url: "{{ OPSVIEW_URL }}/rest/login"
     method: POST
     headers:
       Content-Type: "application/json"
     body_format: json
     body:
-      username: "{{ opsview_username }}"
-      password: "{{ opsview_password }}"
+      username: "{{ OPSVIEW_USERNAME }}"
+      password: "{{ OPSVIEW_PASSWORD }}"
     validate_certs: false
   register: opsview_login
 
@@ -18,10 +18,10 @@
 
 - name: Check if host already exists in Opsview
   uri:
-    url: "{{ opsview_url }}/rest/config/host/{{ ansible_host }}"
+    url: "{{ OPSVIEW_URL }}/rest/config/host/{{ ansible_host }}"
     method: GET
     headers:
-      X-Opsview-Username: "{{ opsview_username }}"
+      X-Opsview-Username: "{{ OPSVIEW_USERNAME }}"
       X-Opsview-Token: "{{ opsview_login.json.token }}"
       Content-Type: "application/json"
     return_content: yes
@@ -60,12 +60,16 @@
       name: "{{ inventory_hostname }}"
       alias: "{{ inventory_hostname }}"
       ip: "{{ ansible_host }}"
-      check_command: "check_host_15!-H $HOSTADDRESS$ -t 3 -w 500.0,80% -c 1000.0,100%"
-      check_period: "24x7"
+      check_command:
+        name: "ping"
+      check_period:
+        name: "24x7"
+      notification_period:
+        name: "24x7"
       notifications_enabled: true
       notification_interval: "60"
-      notification_period: "24x7"
-      notification_options: "u,d,r,f"
+      notification_options:
+        name: "u,d,r,f"
       hostgroup:
         name: "AWX"
       hosttemplates:
@@ -87,7 +91,7 @@
       }}
     method: "{{ opsview_api_method }}"
     headers:
-      X-Opsview-Username: "{{ opsview_username }}"
+      X-Opsview-Username: "{{ OPSVIEW_USERNAME }}"
       X-Opsview-Token: "{{ opsview_login.json.token }}"
       Content-Type: "application/json"
     body_format: json
@@ -95,6 +99,8 @@
     validate_certs: no
   register: opsview_host_result
 
-- name: Debug API result
-  debug:
-    var: opsview_host_result.json
+- name: Apply Opsview configuration (gen_config + restart)
+  become: true
+  ansible.builtin.shell: /usr/local/nagios/bin/rc.opsview gen_config
+  run_once: true
+  delegate_to: opsview_server
