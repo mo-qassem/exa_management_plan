@@ -79,9 +79,13 @@
 - name: Apply Opsview configuration (gen_config + restart)
   become: true
   ansible.builtin.shell: /usr/local/nagios/bin/rc.opsview gen_config
+  register: opsview_gen_config
   run_once: true
   delegate_to: opsview_server
-  args:
-    warn: false
-  register: opsview_gen_config
-  failed_when: opsview_gen_config.rc != 0 and "'command not found'" not in opsview_gen_config.stderr
+
+- name: Restart Opsview service
+  become: true
+  ansible.builtin.shell: /usr/local/nagios/bin/rc.opsview restart
+  when: opsview_gen_config.rc == 0
+  run_once: true
+  delegate_to: opsview_server
