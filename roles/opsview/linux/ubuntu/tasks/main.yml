@@ -32,15 +32,15 @@
   systemd:
     name: opsview-agent.service
     state: started
-  register: opsview-agent_status
+  register: opsview_status
   ignore_errors: true
 
 - name: Set fact if opsview-agent service is running
   set_fact:
-    opsview_installed: "{{ (opsview-agent_status is defined)
-      and (not opsview-agent_status.failed | default(true))
-      and (opsview-agent_status.status is defined)
-      and (opsview-agent_status.status.ActiveState == 'active')
+    opsview_installed: "{{ (opsview_status is defined)
+      and (not opsview_status.failed | default(true))
+      and (opsview_status.status is defined)
+      and (opsview_status.status.ActiveState == 'active')
       }}"
 
 - name: Print the result
