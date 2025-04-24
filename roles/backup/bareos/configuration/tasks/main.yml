@@ -4,9 +4,18 @@
     path: /tmp/add_bareos_repositories.sh
   register: file_exist
 
+- name: Set effective Bareos repo version (fallback CentOS 7 -> 8)
+  set_fact:
+    bareos_repo: >-
+      {% if linux_distribution == 'centos' and linux_version == '7' %}
+        8
+      {% else %}
+        {{ linux_version }}
+      {% endif %}
+
 - name: Download and configure 'Bareos' repository for RHEL-based distros
   get_url:
-    url: "https://download.bareos.org/current/EL_{{ linux_version }}/add_bareos_repositories.sh"
+    url: "https://download.bareos.org/current/EL_{{ bareos_repo }}/add_bareos_repositories.sh"
     dest: /tmp/add_bareos_repositories.sh
   when:
     - when: not file_exist.stat.exists
