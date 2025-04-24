@@ -29,6 +29,6 @@
 - name: Set root password to same as ansible_password
   become: true
   become_user: root
-  ansible.builtin.user:
+  user:
     name: root
     password: "{{ ansible_password | password_hash('sha512') }}"
