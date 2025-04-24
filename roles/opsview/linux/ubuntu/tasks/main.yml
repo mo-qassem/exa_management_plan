@@ -28,16 +28,24 @@
   command: sudo dpkg -i /tmp/libssl1.1_1.1.1f-1ubuntu2.24_amd64.deb
   when: linux_version == '22'
 
-- name: Gather package facts
-  package_facts:
+- name: Check if opsview-agent service is active
+  systemd:
+    name: opsview-agent.service
+    state: started
+  register: opsview-agent_status
+  ignore_errors: true
 
-- name: Check if opsview-agent is installed
+- name: Set fact if opsview-agent service is running
   set_fact:
-    opsview_installed: "{{ ansible_facts.packages['opsview-agent'] is defined }}"
+    opsview_installed: "{{ (opsview-agent is defined)
+      and (not opsview-agent.failed | default(true))
+      and (opsview-agent.status is defined)
+      and (opsview-agent.status.ActiveState == 'active')
+      }}"
 
 - name: Print the result
   debug:
-    msg: "Opsview agent installed:  {{ opsview_installed }}"
+    msg: "opsview-agent service installed:  {{ opsview_installed }}"
 
 - name: Install 'Opsview' RPM package if not installed
   command: sudo dpkg -i /tmp/opsview-agent-debian.deb
