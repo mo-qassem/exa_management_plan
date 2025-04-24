@@ -90,6 +90,18 @@
 - name: Start 'Opsview' Agent
   service:
     name: opsview-agent
-    state: started
+    state: restarted
     enabled: yes
   when: not linux_version == '9'
+
+- name: Kill all processes under user opsview
+  become: true
+  ansible.builtin.shell: |
+    pkill -u opsview || true
+  when: linux_version == '9'
+
+- name: Start Opsview NRPE agent in daemon mode
+  become: true
+  ansible.builtin.shell: >
+    /opt/opsview/agent/bin/nrpe -c /opt/opsview/agent/etc/nrpe.cfg -d
+  when: linux_version == '9'
