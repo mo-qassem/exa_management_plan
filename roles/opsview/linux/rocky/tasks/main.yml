@@ -98,14 +98,10 @@
   become: true
   ansible.builtin.shell: |
     pkill -u opsview || true
-  args:
-    warn: false
   when: linux_version == '9'
 
 - name: Start Opsview NRPE agent in daemon mode
   become: true
   ansible.builtin.shell: >
     /opt/opsview/agent/bin/nrpe -c /opt/opsview/agent/etc/nrpe.cfg -d
-  args:
-    warn: false
   when: linux_version == '9'
