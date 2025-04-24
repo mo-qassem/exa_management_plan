@@ -11,16 +11,6 @@
     state: present
   when: linux_distribution in ['rocky', 'almalinux', 'cloudlinux', 'centos']
 
-- name: Update 'RHEL' package cache
-  yum:
-    update_cache: yes
-  when: linux_distribution in ['rocky', 'almalinux', 'cloudlinux', 'centos']
-
-- name: Update 'Debian' package cache
-  apt:
-    update_cache: yes
-  when: linux_distribution == 'ubuntu'
-
 - name: Install 'compat-openssl11' prerequisite for opsview-agent package on RHEL based Linux 9 and above
   yum:
     name:
@@ -29,6 +19,7 @@
       - tar
       - ed
     state: present
+    update_cache: yes
   when:
     - linux_distribution in ['rocky', 'almalinux', 'cloudlinux', 'centos']
     - linux_version == '9'
@@ -49,6 +40,7 @@
       - rkhunter
       - screen
     state: present
+    update_cache: yes
   when: linux_distribution in ['rocky', 'almalinux', 'cloudlinux', 'centos']
 
 - name: Install 'Useful' tools
@@ -63,6 +55,7 @@
       - rkhunter
       - screen
     state: present
+    update_cache: yes
   when: linux_distribution == 'ubuntu'
 
 - name: Ensure the 'Vnstat' service is started
