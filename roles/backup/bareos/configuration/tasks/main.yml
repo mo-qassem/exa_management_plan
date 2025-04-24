@@ -6,12 +6,7 @@
 
 - name: Set effective Bareos repo version (fallback CentOS 7 -> 8)
   set_fact:
-    bareos_repo: >-
-      {% if linux_distribution == 'centos' and linux_version == '7' %}
-        8
-      {% else %}
-        {{ linux_version }}
-      {% endif %}
+    bareos_repo: "{{ '8' if linux_distribution == 'centos' and linux_version == '7' else linux_version | string | trim }}"
 
 - name: Download and configure 'Bareos' repository for RHEL-based distros
   get_url:
