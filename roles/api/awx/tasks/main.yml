@@ -24,7 +24,7 @@
   set_fact:
     updated_host_vars: >-
       {{
-        awx_host_data.json.variables | from_yaml | combine({'ansible_port': {{ ssh_port }}}, recursive=True)
+        awx_host_data.json.variables | from_yaml | combine({'ansible_port': ssh_port }, recursive=True)
       }}
 
 - name: Update host variables back to AWX
