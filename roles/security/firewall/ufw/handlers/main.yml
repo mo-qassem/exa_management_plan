@@ -1,0 +1,7 @@
+- name: Reload ufw Service
+  become: true
+  become_user: root
+  service:
+    name: ufw
+    state: restarted
+    enabled: yes

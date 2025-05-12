@@ -54,4 +54,28 @@
     - "9101-9103/tcp"
     - "2662/tcp"
     - "31262/tcp"
+  when: not prof_mgmt | bool
+  notify: Reload FirewallD Service
+
+- name: Allow 'Opsview', 'Acronis', and 'SSHs' Ports through FirewallD
+  become: true
+  become_user: root
+  firewalld:
+    zone: public
+    port: "{{ item }}"
+    state: enabled
+    permanent: true
+  loop:
+    - "5666/tcp"
+    - "2662/tcp"
+    - "31262/tcp"
+    - "8443/tcp"
+    - "9850/tcp"
+    - "9851/tcp"
+    - "44445/tcp"
+    - "55556/tcp"
+    - "7778/tcp"
+    - "7779/tcp"
+    - "7770-7800/tcp"
+  when: prof_mgmt | bool
   notify: Reload FirewallD Service
