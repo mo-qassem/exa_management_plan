@@ -1,7 +1,7 @@
 ---
-- name: Allow SSH on custom port 31262 via SELinux
+- name: Allow SSH on custom port via SELinux
   become: true
-  command: semanage port -a -t ssh_port_t -p tcp 31262
+  command: semanage port -a -t ssh_port_t -p tcp {{ ssh_port }}
   when: linux_version == '9'
 
 - name: Ensure root login is enabled in SSH config
@@ -15,16 +15,26 @@
     backup: yes
   notify: Restart SSH Service
 
-- name: Ensure SSH port is set to 31262
+- name: Ensure SSH port is set to our port
   become: true
   become_user: root
   lineinfile:
     path: /etc/ssh/sshd_config
     regexp: "^#?Port"
-    line: "Port 31262"
+    line: "Port {{ ssh_port }}"
     create: yes
     backup: yes
   notify: Restart SSH Service
+
+- name: Add Match User block for exadmn to sshd_config
+  blockinfile:
+    path: /etc/ssh/sshd_config
+    marker: "# {mark} ANSIBLE MANAGED BLOCK: EXADMN RESTRICTIONS"
+    block: |
+      Match User exadmn
+          PasswordAuthentication no
+          AllowUsers exadmn@{{ ansible_control_ip }}
+          PermitTTY no
 
 - name: Set root password to same as ansible_password
   become: true
