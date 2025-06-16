@@ -14,7 +14,7 @@
     dest: /tmp/add_bareos_repositories.sh
   when:
     - when: not file_exist.stat.exists
-    - linux_distribution in ['centos', 'rocky', 'almaLinux', 'cloudLinux']
+    - linux_distribution in ['centos', 'rocky', 'almalinux', 'cloudlinux']
     - linux_version in ['7', '8', '9']
 
 - name: Download and configure 'Bareos' repository for Ubuntu-based distros
