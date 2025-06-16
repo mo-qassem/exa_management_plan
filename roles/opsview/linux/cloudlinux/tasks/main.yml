@@ -18,6 +18,16 @@
     dest: /tmp/opsview-agent-rhel.rpm
   when: not file_exist.stat.exists
 
+- name: Download the libssl required for cloundlinux 7
+  get_url:
+    url: https://box119.exaservers.com/exa_ansible/openssl11-libs-1.1.1k-7.el7.x86_64.rpm
+    dest: /tmp/openssl11-libs-1.1.1k-7.el7.x86_64.rpm
+  when: linux_version == '7'
+
+- name: Install Libssll if not installed
+  command: sudo rpm -i /tmp/openssl11-libs-1.1.1k-7.el7.x86_64.rpm
+  when: linux_version == '7'
+
 - name: Gather package facts
   package_facts:
 
