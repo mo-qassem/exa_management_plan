@@ -36,6 +36,7 @@
       - iftop
       - ncdu
       - htop
+      - ed
       - inotify-tools
       - rkhunter
       - screen
