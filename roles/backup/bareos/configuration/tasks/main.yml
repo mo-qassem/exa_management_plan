@@ -4,6 +4,14 @@
     path: /tmp/add_bareos_repositories.sh
   register: file_exist
 
+- name: Debug variable values before Bareos repo download
+  debug:
+    msg:
+      - "file_exist.stat.exists: {{ file_exist.stat.exists }}"
+      - "linux_distribution: {{ linux_distribution }}"
+      - "linux_version: {{ linux_version }}"
+      - "bareos_repo: {{ bareos_repo }}"
+
 - name: Set effective Bareos repo version (fallback CentOS 7 -> 8)
   set_fact:
     bareos_repo: "{{ '8' if linux_distribution in ['centos', 'cloudlinux'] and linux_version == '7' else linux_version | string | trim }}"
