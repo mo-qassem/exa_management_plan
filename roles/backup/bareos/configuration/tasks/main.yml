@@ -30,13 +30,13 @@
     url: "https://download.bareos.org/current/xUbuntu_{{ linux_version }}.04/add_bareos_repositories.sh"
     dest: /tmp/add_bareos_repositories.sh
   when:
-    - when: not file_exist.stat.exists
+    - not file_exist.stat.exists
     - linux_distribution == 'ubuntu'
     - linux_version in ['20', '22', '24']
 
 - name: Run the script to add the repository
   command: "sudo bash /tmp/add_bareos_repositories.sh"
-  when: not file_exist.stat.exists
+  when: file_exist.stat.exists
 
 - name: Install 'Bareos' File Daemon on RHEL-based distros
   yum:
