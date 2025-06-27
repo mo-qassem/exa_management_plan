@@ -43,7 +43,7 @@
     name: bareos-fd
     state: present
     update_cache: yes
-  when: linux_distribution in ['centos', 'rocky', 'almaLinux', 'cloudLinux']
+  when: linux_distribution in ['centos', 'rocky', 'almalinux', 'cloudLinux']
 
 - name: Install 'Bareos' File Daemon on Debian-based distros
   apt:
