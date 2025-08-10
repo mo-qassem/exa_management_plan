@@ -36,7 +36,6 @@
 
 - name: Run the script to add the repository
   command: "sudo bash /tmp/add_bareos_repositories.sh"
-  when: file_exist.stat.exists
 
 - name: Install 'Bareos' File Daemon on RHEL-based distros
   yum:
