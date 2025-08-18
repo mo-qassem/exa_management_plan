@@ -39,7 +39,6 @@
       - inotify-tools
       - rkhunter
       - screen
-      - libstdc++.so.6
     state: present
     update_cache: yes
   when: linux_distribution in ['rocky', 'almalinux', 'cloudlinux', 'centos']
@@ -48,6 +47,7 @@
   yum:
     name:
       - ed
+      - libstdc++.so.6
     state: present
     update_cache: yes
   when:
