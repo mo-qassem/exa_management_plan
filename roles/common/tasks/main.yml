@@ -36,11 +36,18 @@
       - iftop
       - ncdu
       - htop
-      - ed
       - inotify-tools
       - rkhunter
       - screen
       - libstdc++.so.6
+    state: present
+    update_cache: yes
+  when: linux_distribution in ['rocky', 'almalinux', 'cloudlinux', 'centos']
+
+- name: Install 'ed' tool
+  yum:
+    name:
+      - ed
     state: present
     update_cache: yes
   when:
