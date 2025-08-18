@@ -43,7 +43,9 @@
       - libstdc++.so.6
     state: present
     update_cache: yes
-  when: linux_distribution in ['rocky', 'almalinux', 'cloudlinux', 'centos']
+  when:
+    - linux_distribution in ['rocky', 'almalinux', 'cloudlinux', 'centos']
+    - linux_version in ['8', '9']
 
 - name: Install 'Useful' tools
   apt:
