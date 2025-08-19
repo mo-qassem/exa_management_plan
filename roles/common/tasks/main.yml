@@ -39,20 +39,11 @@
       - inotify-tools
       - rkhunter
       - screen
-    state: present
-    update_cache: yes
-  when: linux_distribution in ['rocky', 'almalinux', 'cloudlinux', 'centos']
-
-- name: Install 'ed' tool
-  yum:
-    name:
       - ed
       - libstdc++.so.6
     state: present
     update_cache: yes
-  when:
-    - linux_distribution in ['rocky', 'almalinux', 'cloudlinux', 'centos']
-    - linux_version in ['8', '9']
+  when: linux_distribution in ['rocky', 'almalinux', 'cloudlinux', 'centos']
 
 - name: Install 'Useful' tools
   apt:
