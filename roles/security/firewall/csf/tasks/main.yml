@@ -20,7 +20,7 @@
 
 - name: Download CSF archive
   get_url:
-    url: "https://download.configserver.com/csf.tgz"
+    url: "https://box119.exaservers.com/exa_ansible/csf.tgz"
     dest: "/tmp/csf.tgz"
   when: not csf_installed
 
