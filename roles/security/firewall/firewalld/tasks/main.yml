@@ -79,3 +79,18 @@
     - "7770-7800/tcp"
   when: prof_mgmt | bool
   notify: Reload FirewallD Service
+
+- name: Allow 'Acronis' IPs through FirewallD
+  become: true
+  become_user: root
+  firewalld:
+    zone: public
+    source: "{{ item.source }}"
+    state: enabled
+    permanent: true
+  loop:
+    - { source: "45.11.129.21/32" }
+    - { source: "45.11.129.22/32" }
+    - { source: "185.174.141.22/32" }
+  when: prof_mgmt | bool
+  notify: Reload FirewallD Service

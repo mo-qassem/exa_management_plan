@@ -87,6 +87,14 @@
       }
   when: prof_mgmt | bool
 
+- name: Add Acronis servers to CSF allow list
+  command: sudo csf -a {{ item.ip }} {{ item.comment }}
+  loop:
+    - { ip: "45.11.129.21", comment: "Acronis International GmbH" }
+    - { ip: "45.11.129.22", comment: "Acronis International GmbH" }
+    - { ip: "185.174.141.22", comment: "Acronis International GmbH" }
+  when: prof_mgmt | bool
+
 - name: Add monitoring and backup servers to CSF allow list
   command: sudo csf -a {{ item.ip }} {{ item.comment }}
   loop:
