@@ -18,9 +18,15 @@
   debug:
     msg: "CSF service installed:  {{ csf_installed }}"
 
+# - name: Download CSF archive
+#   get_url:
+#     url: "https://box119.exaservers.com/exa_ansible/csf.tgz"
+#     dest: "/tmp/csf.tgz"
+#   when: not csf_installed
+
 - name: Download CSF archive
   get_url:
-    url: "https://box119.exaservers.com/exa_ansible/csf.tgz"
+    url: "https://download.configserver.dev/csf.tgz"
     dest: "/tmp/csf.tgz"
   when: not csf_installed
 
@@ -101,6 +107,7 @@
     - { ip: "85.17.194.5", comment: "exa-vpn" }
     - { ip: "94.75.230.111", comment: "exa-opsview-server" }
     - { ip: "212.83.154.138", comment: "exa-bareos-server" }
+    - { ip: "62.210.6.242", comment: "exa-patchmon-server" }
 
 - name: Restart CSF
   command: sudo csf -r

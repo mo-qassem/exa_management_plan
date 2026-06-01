@@ -33,8 +33,10 @@
     block: |
       Match User exadmn
           PasswordAuthentication no
+          PubkeyAuthentication yes
+          X11Forwarding no
+          AllowTcpForwarding no
           AllowUsers exadmn@{{ ansible_control_ip }}
-          PermitTTY no
 
 - name: Set root password to same as ansible_password
   become: true
