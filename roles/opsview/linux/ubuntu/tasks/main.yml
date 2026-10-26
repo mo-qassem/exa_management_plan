@@ -28,6 +28,31 @@
   command: sudo dpkg -i /tmp/libssl1.1_1.1.1f-1ubuntu2.24_amd64.deb
   when: linux_version == '22'
 
+- name: Download libssl1.1 compatibility package for Ubuntu 24.04
+  become: true
+  ansible.builtin.get_url:
+    url: https://security.ubuntu.com/ubuntu/pool/main/o/openssl/libssl1.1_1.1.1f-1ubuntu2.24_amd64.deb
+    dest: /tmp/libssl1.1_1.1.1f-1ubuntu2.24_amd64.deb
+    mode: "0644"
+  when:
+    - ansible_distribution == "Ubuntu"
+    - ansible_distribution_version == "24.04"
+    - ansible_architecture == "x86_64"
+
+- name: Install libssl1.1 compatibility package
+  become: true
+  ansible.builtin.command:
+    argv:
+      - dpkg
+      - -i
+      - /tmp/libssl1.1_1.1.1f-1ubuntu2.24_amd64.deb
+  args:
+    creates: /usr/lib/x86_64-linux-gnu/libssl.so.1.1
+  when:
+    - ansible_distribution == "Ubuntu"
+    - ansible_distribution_version == "24.04"
+    - ansible_architecture == "x86_64"
+
 - name: Check if opsview-agent service is active
   systemd:
     name: opsview-agent.service
@@ -97,6 +122,19 @@
     dest: /opt/opsview/agent/plugins
     group: opsview
     mode: "0750"
+
+- name: Configure the legacy Opsview Agent package
+  become: true
+  ansible.builtin.command:
+    argv:
+      - dpkg
+      - --configure
+      - opsview-agent
+  register: opsview_configure
+  changed_when: "'Setting up opsview-agent' in opsview_configure.stdout"
+  when:
+    - ansible_distribution == "Ubuntu"
+    - ansible_distribution_version == "24.04"
 
 - name: Start 'Opsview' Agent
   service:
