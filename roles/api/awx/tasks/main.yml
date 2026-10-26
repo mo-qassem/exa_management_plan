@@ -6,6 +6,7 @@
       Authorization: "Bearer {{ lookup('env', 'AWX_TOKEN') }}"
     validate_certs: false
   register: awx_host_lookup
+  delegate_to: localhost
 
 - name: Retrive the host id
   set_fact:
@@ -19,6 +20,7 @@
       Authorization: "Bearer {{ lookup('env', 'AWX_TOKEN') }}"
     validate_certs: false
   register: awx_host_data
+  delegate_to: localhost
 
 - name: Merge new ansible_port into existing host variables
   set_fact:
