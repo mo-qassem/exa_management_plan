@@ -123,7 +123,19 @@
     group: opsview
     mode: "0750"
 
-- name: Configure the legacy Opsview Agent package
+- name: Check Opsview Agent package status
+  become: true
+  ansible.builtin.command:
+    argv:
+      - dpkg-query
+      - -W
+      - -f=${db:Status-Status}
+      - opsview-agent
+  register: opsview_package_status
+  changed_when: false
+  failed_when: false
+
+- name: Configure Opsview Agent if not already configured
   become: true
   ansible.builtin.command:
     argv:
@@ -131,10 +143,10 @@
       - --configure
       - opsview-agent
   register: opsview_configure
-  changed_when: "'Setting up opsview-agent' in opsview_configure.stdout"
   when:
-    - ansible_distribution == "Ubuntu"
-    - ansible_distribution_version == "24.04"
+    - opsview_package_status.rc == 0
+    - opsview_package_status.stdout | trim != "installed"
+  changed_when: opsview_configure.rc == 0
 
 - name: Start 'Opsview' Agent
   service:
