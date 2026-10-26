@@ -1,31 +1,54 @@
 ---
-- name: Check if UFW service is active
-  systemd:
-    name: ufw.service
-    state: started
-  register: ufw_status
-  ignore_errors: true
 
-- name: Set fact if FirewallD service is running
-  set_fact:
-    ufw_installed: "{{ (ufw_status is defined)
-      and (not ufw_status.failed | default(true))
-      and (ufw.status is defined)
-      and (ufw_status.status.ActiveState == 'active')
-      }}"
+- name: Check whether UFW is installed
+  become: true
+  ansible.builtin.command:
+    argv:
+      - dpkg-query
+      - -W
+      - -f=${db:Status-Status}
+      - ufw
+  register: ufw_package_status
+  changed_when: false
+  failed_when: false
+
+- name: Install UFW if not installed
+  become: true
+  ansible.builtin.apt:
+    name: ufw
+    state: present
+    update_cache: true
+  when: >-
+    ansible_distribution == "Ubuntu" and
+    (ufw_package_status.rc != 0 or
+    ufw_package_status.stdout | trim != "installed")
+
+- name: Check if UFW service is active
+  become: true
+  ansible.builtin.command:
+    argv:
+      - systemctl
+      - is-active
+      - ufw.service
+  register: ufw_status
+  changed_when: false
+  failed_when: false
+
+- name: Set fact if UFW service is running
+  ansible.builtin.set_fact:
+    ufw_installed: "{{ ufw_status.rc == 0 }}"
 
 - name: Print the result
-  debug:
-    msg: "UFW service active:  {{ ufw_installed }}"
+  ansible.builtin.debug:
+    msg: "UFW service active: {{ ufw_installed }}"
 
-- name: Ensure 'UFW' service is running
+- name: Ensure UFW service is enabled and running
   become: true
-  become_user: root
-  service:
-    name: ufw
+  ansible.builtin.systemd:
+    name: ufw.service
     state: started
-    enabled: yes
-  when: not ufw_installed
+    enabled: true
+  when: ansible_distribution == "Ubuntu"
 
 - name: Allow 'Opsview' and 'Bareos' IPs through UFW
   community.general.ufw:
