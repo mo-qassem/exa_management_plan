@@ -48,7 +48,7 @@
     name: ufw.service
     state: started
     enabled: true
-  when: ansible_distribution == "Ubuntu"
+  when: linux_distribution == 'ubuntu'
 
 - name: Allow 'Opsview' and 'Bareos' IPs through UFW
   community.general.ufw:

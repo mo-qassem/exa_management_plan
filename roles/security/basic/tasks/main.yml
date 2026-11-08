@@ -13,7 +13,9 @@
     line: "PermitRootLogin yes"
     create: yes
     backup: yes
-  notify: Restart SSH Service
+  notify:
+    - Restart SSH Service (RHEL)
+    - Restart SSH Service (UBUNTU)
 
 - name: Ensure SSH port is set to our port
   become: true
@@ -24,7 +26,9 @@
     line: "Port {{ ssh_port }}"
     create: yes
     backup: yes
-  notify: Restart SSH Service
+  notify: 
+    - Restart SSH Service (RHEL)
+    - Restart SSH Service (UBUNTU)
 
 - name: Add Match User block for exadmn to sshd_config
   blockinfile:

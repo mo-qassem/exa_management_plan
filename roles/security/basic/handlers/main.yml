@@ -1,12 +1,12 @@
 ---
-- name: Restart SSH Service
+- name: Restart SSH Service (RHEL)
   service:
     name: sshd
     state: restarted
+  when: linux_distribution in ['rocky', 'almalinux', 'cloudlinux', 'centos']
 
-- name: Restart SSH Service
+- name: Restart SSH Service (UBUNTU)
   service:
     name: ssh
     state: restarted
-  when: 
-    - ansible_distribution == "Ubuntu"
+  when: linux_distribution == 'ubuntu'
