@@ -1,127 +1,89 @@
 ---
-- name: Ensure the Ansible tmp directory exists with correct permissions
-  file:
-    path: "/home/exadmn/.ansible/tmp"
+- name: Ensure the Ansible tmp directory exists
+  become: true
+  ansible.builtin.file:
+    path: /home/exadmn/.ansible/tmp
     state: directory
     mode: "0755"
     owner: exadmn
     group: exadmn
 
-- name: Check If 'Opsview' already downloaded or not
-  stat:
-    path: /tmp/opsview-agent-debian.deb
-  register: file_exist
 
-- name: Download the package if it is not exist
-  get_url:
-    url: https://box119.exaservers.com/exa_ansible/opsview-agent-debian.deb
-    dest: /tmp/opsview-agent-debian.deb
-  when: not file_exist.stat.exists
-
-- name: Download the libssl required for ubuntu 22
-  get_url:
-    url: https://box119.exaservers.com/exa_ansible/libssl1.1_1.1.1f-1ubuntu2.24_amd64.deb
-    dest: /tmp/libssl1.1_1.1.1f-1ubuntu2.24_amd64.deb
-  when: linux_version == '22'
-
-- name: Install Libssll if not installed
-  command: sudo dpkg -i /tmp/libssl1.1_1.1.1f-1ubuntu2.24_amd64.deb
-  when: linux_version == '22'
-
-- name: Download libssl1.1 compatibility package for Ubuntu 24.04
+- name: Download Opsview Agent Debian package
   become: true
   ansible.builtin.get_url:
-    url: https://security.ubuntu.com/ubuntu/pool/main/o/openssl/libssl1.1_1.1.1f-1ubuntu2.24_amd64.deb
+    url: https://box119.exaservers.com/exa_ansible/opsview-agent-debian.deb
+    dest: /tmp/opsview-agent-debian.deb
+    mode: "0644"
+
+- name: Check libssl1.1 package status
+  become: true
+  ansible.builtin.command:
+    argv:
+      - dpkg-query
+      - -W
+      - "-f=${db:Status-Status}"
+      - libssl1.1
+  register: libssl_status
+  changed_when: false
+  failed_when: false
+  when:
+    - ansible_distribution == "Ubuntu"
+    - ansible_distribution_version in ['22.04', '24.04', '26.04']
+    - ansible_architecture == "x86_64"
+
+
+- name: Download libssl1.1 compatibility package
+  become: true
+  ansible.builtin.get_url:
+    url: https://box119.exaservers.com/exa_ansible/libssl1.1_1.1.1f-1ubuntu2.24_amd64.deb
     dest: /tmp/libssl1.1_1.1.1f-1ubuntu2.24_amd64.deb
     mode: "0644"
   when:
     - ansible_distribution == "Ubuntu"
-    - linux_version in ['24.04', '26.04']
+    - ansible_distribution_version in ['22.04', '24.04', '26.04']
     - ansible_architecture == "x86_64"
+    - libssl_status.stdout | default('') | trim != 'installed'
+
 
 - name: Install libssl1.1 compatibility package
   become: true
+  ansible.builtin.apt:
+    deb: /tmp/libssl1.1_1.1.1f-1ubuntu2.24_amd64.deb
+    state: present
+  when:
+    - ansible_distribution == "Ubuntu"
+    - ansible_distribution_version in ['22.04', '24.04', '26.04']
+    - ansible_architecture == "x86_64"
+    - libssl_status.stdout | default('') | trim != 'installed'
+
+
+- name: Verify libssl1.1 installation
+  become: true
   ansible.builtin.command:
     argv:
-      - dpkg
-      - -i
-      - /tmp/libssl1.1_1.1.1f-1ubuntu2.24_amd64.deb
-  args:
-    creates: /usr/lib/x86_64-linux-gnu/libssl.so.1.1
+      - dpkg-query
+      - -W
+      - "-f=${db:Status-Status}"
+      - libssl1.1
+  register: libssl_verify
+  changed_when: false
   when:
-    - linux_distribution == "Ubuntu"
-    - linux_version in ['24.04', '26.04']
+    - ansible_distribution == "Ubuntu"
+    - ansible_distribution_version in ['22.04', '24.04', '26.04']
     - ansible_architecture == "x86_64"
 
-- name: Check if opsview-agent service is active
-  systemd:
-    name: opsview-agent.service
-    state: started
-  register: opsview_status
-  ignore_errors: true
 
-- name: Set fact if opsview-agent service is running
-  set_fact:
-    opsview_installed: "{{ (opsview_status is defined)
-      and (not opsview_status.failed | default(true))
-      and (opsview_status.status is defined)
-      and (opsview_status.status.ActiveState == 'active')
-      }}"
+- name: Ensure libssl1.1 is installed
+  ansible.builtin.assert:
+    that:
+      - libssl_verify.stdout | trim == 'installed'
+    fail_msg: "libssl1.1 compatibility package installation failed."
+  when:
+    - ansible_distribution == "Ubuntu"
+    - ansible_distribution_version in ['22.04', '24.04', '26.04']
+    - ansible_architecture == "x86_64"
 
-- name: Print the result
-  debug:
-    msg: "opsview-agent service installed:  {{ opsview_installed }}"
-
-- name: Install 'Opsview' RPM package if not installed
-  command: sudo dpkg -i /tmp/opsview-agent-debian.deb
-  args:
-    creates: /opt/opsview/agent
-  when: not opsview_installed
-
-- name: Add special permissions to 'Sudoers' file
-  blockinfile:
-    path: /etc/sudoers
-    insertafter: "^## Allows members of the users group to shutdown this system"
-    block: |
-      opsview ALL=NOPASSWD:/usr/sbin/exim
-      opsview ALL=NOPASSWD:/usr/sbin/csf
-      opsview ALL=NOPASSWD:/usr/sbin/lfd
-      opsview ALL=NOPASSWD:/usr/bin/omreport
-      opsview ALL=NOPASSWD:/opt/opsview/agent/plugins/check_tcp
-      opsview ALL=NOPASSWD:/opt/opsview/agent/plugins/check_disk
-      opsview ALL=NOPASSWD:/opt/opsview/agent/plugins/check_csf
-    create: yes
-
-- name: Copy the 'NRPE' configuration file
-  template:
-    src: files/opsview/nrpe.cfg.j2
-    dest: /opt/opsview/agent/etc/nrpe.cfg
-
-- name: Copy the 'check_bandwidth_quota' file
-  template:
-    src: files/opsview/check_bandwidth_quota.sh.j2
-    dest: /opt/opsview/agent/plugins/check_bandwidth_quota.sh
-
-- name: Copy the 'check_csf' file
-  copy:
-    src: files/opsview/check_csf
-    dest: /opt/opsview/agent/plugins
-    group: opsview
-    mode: "0750"
-
-- name: Copy the 'check_eximmailqueue' file
-  copy:
-    src: files/opsview/check_eximmailqueue
-    dest: /opt/opsview/agent/plugins
-    group: opsview
-    mode: "0750"
-
-- name: Copy the 'check_Raid' file
-  copy:
-    src: files/opsview/check_raid.pl
-    dest: /opt/opsview/agent/plugins
-    group: opsview
-    mode: "0750"
 
 - name: Check Opsview Agent package status
   become: true
@@ -129,11 +91,34 @@
     argv:
       - dpkg-query
       - -W
-      - -f=${db:Status-Status}
+      - "-f=${db:Status-Status}"
       - opsview-agent
   register: opsview_package_status
   changed_when: false
   failed_when: false
+
+- name: Install Opsview Agent Debian package
+  become: true
+  ansible.builtin.apt:
+    deb: /tmp/opsview-agent-debian.deb
+    state: present
+  when:
+    - opsview_package_status.rc != 0
+      or opsview_package_status.stdout | trim != 'installed'
+
+
+- name: Check Opsview Agent package status after installation
+  become: true
+  ansible.builtin.command:
+    argv:
+      - dpkg-query
+      - -W
+      - "-f=${db:Status-Status}"
+      - opsview-agent
+  register: opsview_package_status_after
+  changed_when: false
+  failed_when: false
+
 
 - name: Configure Opsview Agent if not already configured
   become: true
@@ -144,12 +129,94 @@
       - opsview-agent
   register: opsview_configure
   when:
-    - opsview_package_status.rc == 0
-    - opsview_package_status.stdout | trim != "installed"
-  changed_when: opsview_configure.rc == 0
+    - opsview_package_status_after.rc == 0
+    - opsview_package_status_after.stdout | trim != 'installed'
+  changed_when: true
 
-- name: Start 'Opsview' Agent
-  service:
-    name: opsview-agent
-    state: restarted
-    enabled: yes
+- name: Add special permissions to Opsview sudoers
+  become: true
+  ansible.builtin.blockinfile:
+    path: /etc/sudoers
+    insertafter: "^## Allows members of the users group to shutdown this system"
+    block: |
+      opsview ALL=NOPASSWD:/usr/sbin/exim
+      opsview ALL=NOPASSWD:/usr/sbin/csf
+      opsview ALL=NOPASSWD:/usr/sbin/lfd
+      opsview ALL=NOPASSWD:/usr/bin/omreport
+      opsview ALL=NOPASSWD:/opt/opsview/agent/plugins/check_tcp
+      opsview ALL=NOPASSWD:/opt/opsview/agent/plugins/check_disk
+      opsview ALL=NOPASSWD:/opt/opsview/agent/plugins/check_csf
+    create: true
+    validate: '/usr/sbin/visudo -cf %s'
+
+
+- name: Copy NRPE configuration file
+  become: true
+  ansible.builtin.template:
+    src: files/opsview/nrpe.cfg.j2
+    dest: /opt/opsview/agent/etc/nrpe.cfg
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Restart Opsview Agent
+
+- name: Copy check_bandwidth_quota
+  become: true
+  ansible.builtin.template:
+    src: files/opsview/check_bandwidth_quota.sh.j2
+    dest: /opt/opsview/agent/plugins/check_bandwidth_quota.sh
+    owner: root
+    group: opsview
+    mode: "0750"
+
+
+- name: Copy check_csf
+  become: true
+  ansible.builtin.copy:
+    src: files/opsview/check_csf
+    dest: /opt/opsview/agent/plugins/check_csf
+    owner: root
+    group: opsview
+    mode: "0750"
+
+
+- name: Copy check_eximmailqueue
+  become: true
+  ansible.builtin.copy:
+    src: files/opsview/check_eximmailqueue
+    dest: /opt/opsview/agent/plugins/check_eximmailqueue
+    owner: root
+    group: opsview
+    mode: "0750"
+
+
+- name: Copy check_Raid
+  become: true
+  ansible.builtin.copy:
+    src: files/opsview/check_raid.pl
+    dest: /opt/opsview/agent/plugins/check_raid.pl
+    owner: root
+    group: opsview
+    mode: "0750"
+
+- name: Ensure Opsview Agent is enabled and running
+  become: true
+  ansible.builtin.systemd:
+    name: opsview-agent.service
+    state: started
+    enabled: true
+
+- name: Check Opsview Agent service status
+  become: true
+  ansible.builtin.command:
+    argv:
+      - systemctl
+      - is-active
+      - opsview-agent.service
+  register: opsview_service_status
+  changed_when: false
+  failed_when: opsview_service_status.stdout | trim != 'active'
+
+- name: Display Opsview Agent status
+  ansible.builtin.debug:
+    msg: "Opsview Agent is successfully installed and running on {{ inventory_hostname }}."
