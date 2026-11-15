@@ -16,22 +16,21 @@
     dest: /tmp/opsview-agent-debian.deb
     mode: "0644"
 
-- name: Check libssl1.1 package status
+- name: Check whether libssl1.1 is installed
   become: true
   ansible.builtin.command:
     argv:
       - dpkg-query
       - -W
-      - "-f=${db:Status-Status}"
+      - -f=${db:Status-Status}
       - libssl1.1
   register: libssl_status
   changed_when: false
   failed_when: false
   when:
     - ansible_distribution == "Ubuntu"
-    - ansible_distribution_version in ['22.04', '24.04', '26.04']
+    - ansible_distribution_version == "26.04"
     - ansible_architecture == "x86_64"
-
 
 - name: Download libssl1.1 compatibility package
   become: true
@@ -41,9 +40,24 @@
     mode: "0644"
   when:
     - ansible_distribution == "Ubuntu"
-    - ansible_distribution_version in ['22.04', '24.04', '26.04']
+    - ansible_distribution_version == "26.04"
     - ansible_architecture == "x86_64"
-    - libssl_status.stdout | default('') | trim != 'installed'
+    - libssl_status.stdout | default('') | trim != "installed"
+
+- name: Install libssl1.1 compatibility package using dpkg
+  become: true
+  ansible.builtin.command:
+    argv:
+      - dpkg
+      - -i
+      - /tmp/libssl1.1_1.1.1f-1ubuntu2.24_amd64.deb
+  when:
+    - ansible_distribution == "Ubuntu"
+    - ansible_distribution_version == "26.04"
+    - ansible_architecture == "x86_64"
+    - libssl_status.stdout | default('') | trim != "installed"
+  register: libssl_install
+  changed_when: libssl_install.rc == 0
 
 
 - name: Install libssl1.1 compatibility package
