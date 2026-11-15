@@ -28,8 +28,8 @@
   changed_when: false
   failed_when: false
   when:
-    - ansible_distribution == "Ubuntu"
-    - ansible_distribution_version == "26.04"
+    - linux_distribution == 'ubuntu'
+    - linux_version in ['22', '24', '26']
     - ansible_architecture == "x86_64"
 
 - name: Download libssl1.1 compatibility package
@@ -39,9 +39,8 @@
     dest: /tmp/libssl1.1_1.1.1f-1ubuntu2.24_amd64.deb
     mode: "0644"
   when:
-    - ansible_distribution == "Ubuntu"
-    - ansible_distribution_version == "26.04"
-    - ansible_architecture == "x86_64"
+    - linux_distribution == 'ubuntu'
+    - linux_version in ['22', '24', '26']
     - libssl_status.stdout | default('') | trim != "installed"
 
 - name: Install libssl1.1 compatibility package using dpkg
@@ -52,9 +51,8 @@
       - -i
       - /tmp/libssl1.1_1.1.1f-1ubuntu2.24_amd64.deb
   when:
-    - ansible_distribution == "Ubuntu"
-    - ansible_distribution_version == "26.04"
-    - ansible_architecture == "x86_64"
+    - linux_distribution == 'ubuntu'
+    - linux_version in ['22', '24', '26']
     - libssl_status.stdout | default('') | trim != "installed"
   register: libssl_install
   changed_when: libssl_install.rc == 0
@@ -66,9 +64,8 @@
     deb: /tmp/libssl1.1_1.1.1f-1ubuntu2.24_amd64.deb
     state: present
   when:
-    - ansible_distribution == "Ubuntu"
-    - ansible_distribution_version in ['22.04', '24.04', '26.04']
-    - ansible_architecture == "x86_64"
+    - linux_distribution == 'ubuntu'
+    - linux_version in ['22', '24', '26']
     - libssl_status.stdout | default('') | trim != 'installed'
 
 
@@ -83,9 +80,8 @@
   register: libssl_verify
   changed_when: false
   when:
-    - ansible_distribution == "Ubuntu"
-    - ansible_distribution_version in ['22.04', '24.04', '26.04']
-    - ansible_architecture == "x86_64"
+    - linux_distribution == 'ubuntu'
+    - linux_version in ['20', '22', '24', '26']
 
 
 - name: Ensure libssl1.1 is installed
@@ -94,9 +90,8 @@
       - libssl_verify.stdout | trim == 'installed'
     fail_msg: "libssl1.1 compatibility package installation failed."
   when:
-    - ansible_distribution == "Ubuntu"
-    - ansible_distribution_version in ['22.04', '24.04', '26.04']
-    - ansible_architecture == "x86_64"
+    - linux_distribution == 'ubuntu'
+    - linux_version in ['20', '22', '24', '26']
 
 
 - name: Check Opsview Agent package status

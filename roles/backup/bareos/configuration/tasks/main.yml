@@ -80,13 +80,13 @@
   when:
     - not file_exist.stat.exists
     - linux_distribution == 'ubuntu'
-    - linux_version in ['20', '22', '24']
+    - linux_version in ['20', '22', '24', '26']
 
 - name: Run the script to add the repository
   command: "sudo bash /tmp/add_bareos_repositories.sh"
   when:
     - linux_distribution == 'ubuntu'
-    - linux_version in ['20', '22', '24']
+    - linux_version in ['20', '22', '24', '26']
 
 - name: Install 'Bareos' File Daemon on Debian-based distros
   apt:
