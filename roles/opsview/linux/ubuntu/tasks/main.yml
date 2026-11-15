@@ -35,8 +35,8 @@
     dest: /tmp/libssl1.1_1.1.1f-1ubuntu2.24_amd64.deb
     mode: "0644"
   when:
-    - ansible_distribution == "Ubuntu"
-    - ansible_distribution_version == "24.04"
+    - linux_distribution == "Ubuntu"
+    - linux_version in ['24', '26']
     - ansible_architecture == "x86_64"
 
 - name: Install libssl1.1 compatibility package
@@ -49,8 +49,8 @@
   args:
     creates: /usr/lib/x86_64-linux-gnu/libssl.so.1.1
   when:
-    - ansible_distribution == "Ubuntu"
-    - ansible_distribution_version == "24.04"
+    - linux_distribution == "Ubuntu"
+    - linux_version in ['24', '26']
     - ansible_architecture == "x86_64"
 
 - name: Check if opsview-agent service is active
