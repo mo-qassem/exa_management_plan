@@ -172,7 +172,6 @@
     owner: root
     group: root
     mode: "0644"
-  notify: Restart Opsview Agent
 
 - name: Copy check_bandwidth_quota
   become: true
@@ -234,3 +233,10 @@
 - name: Display Opsview Agent status
   ansible.builtin.debug:
     msg: "Opsview Agent is successfully installed and running on {{ inventory_hostname }}."
+
+- name: Restart Opsview Agent
+  become: true
+  ansible.builtin.service:
+    name: opsview-agent
+    state: restarted
+    enabled: true
